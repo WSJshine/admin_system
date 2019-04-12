@@ -173,8 +173,9 @@
       getUserInfo() {
         const l = this.getStorage('login');
         const u = this.getStorage('user');
-        if (u && l) {
-          this.user = JSON.parse(this.$base64.decode(u));
+        // if (u && l) {//user你在登陆的时候存了吗，storage里面没有user，所以跳转到登陆了，但是登陆判断有login所以就跳转到home，然后就死循环；
+        if (l) {//j就改了一个地方，就是这里之前是if（u&&l）改成了if(l )因为你user在登陆的时候没有存，所以这里就不要判断了，等加上接口之后再判断user好
+          this.user = {};//JSON.parse(this.$base64.decode(u));
           console.log(this.user);
         } else {
           // this.ele_alert("获取用户信息失败！", "error");

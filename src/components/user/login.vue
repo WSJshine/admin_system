@@ -57,6 +57,7 @@
               console.log(res.data);
              // this.setStorage("login",this.$base64.encode(res.data.map.token));//获取token
               that.setStorage("login",this.$base64.encode(res.data.token));
+              that.setStorage("log",res.data.token);
               that.tips("登录成功","success");
               console.log(res);
               that.$router.push({path: "/home"});
@@ -64,14 +65,22 @@
             });
           },
         getUserInfo(){
-          that.requestApiFnc("/sysUser/login","post",{token:this.$base64.decode(this.getStorage('login'))},(res)=>{
-              const {code,map:{user},message} = res.data;
+          let that=this;
+          var token = that.getStorage("login");
+          var toke = that.getStorage("log");
+          console.log("###############");
+          console.log(toke);
+          console.log(this.$base64.decode(token));//你这里的token是无效的，所以解密不出来，所以报参数错误，你去找个争取的token或者注释掉frame里面的&&u
+          that.requestApiFnc("/sysUser/login","post",{token:this.$base64.decode(token)},(res)=>{
+            console.log(res.data);
+            let {code,message} = res.data;
               if (code === 200){
-                that.setStorage('user',that.$base64.encode(JSON.stringify(user)));
+                // that.setStorage('user',"123");
+               // that.setStorage('user',that.$base64.encode(JSON.stringify(user)));
                 /*console.log(this.getStorage('user'));
                 console.log(this.$base64.decode(this.getStorage('user')));
                 console.log(JSON.parse(this.$base64.decode(this.getStorage('user'))));*/
-                this.$router.push({path: "/home"});
+                that.$router.push({path: "/home"});
               }
             })
         },
@@ -80,14 +89,16 @@
         },
       },
       created(){
+        let that=this;
         // 使用sessionStorage模拟登录状态
-        var login = this.getStorage("login");
+        var login = that.getStorage("login");
+        console.log("111111111");
         console.log(login);
         if(login==null || login=="0"){
           console.log("没有登录");
         }else {
-          console.log("已经登录了 直接跳到首页");
-          that.$router.push({path: "/home"});
+          console.log("已经登录了 直接跳到首页");//
+          that.$router.replace({name: "Home"});
         //   this.getUserInfo();
         }
          // this.notify("warning","注意","账号和密码是假数据，直接点击登录即可~~")
