@@ -142,7 +142,7 @@ exports.install = function (Vue, options) {
 
       }
       console.log(p);
-      this.$axios.post(url+"?"+p).then((res) => {
+      this.$axios.post(url, data).then((res) => {
         successCallback(res)
       }).catch((error) => {
         if (errorCallback) {

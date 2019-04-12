@@ -5,20 +5,27 @@
 
 
 <div class="loginWrapper ">
-  <div class="logo "><img src="../../assets/logo.png" alt=""></div>
-  <el-form :label-position="labelPosition" label-width="80px" :model="form">
-    <el-form-item label="账号">
-      <el-input v-model="form.username"></el-input>
+  <div class="logo "><p class="zi">校园可视化管理系统</p></div>
+  <el-form :label-position="labelPosition" label-width="80px" :model="form" >
+    <el-form-item label="">
+      <el-input v-model="form.userName" placeholder="请输入用户名">
+        <template slot="prepend"><img src="../../assets/other-img/yonghudl@2x.png"  width="28px" height="28px"></template>
+      </el-input>
     </el-form-item>
-    <el-form-item label="密码">
-      <el-input type="password" v-model="form.password"></el-input>
+    <el-form-item label="">
+      <el-input type="password" v-model="form.password" placeholder="请输入密码">
+        <template slot="prepend"><img src="../../assets/other-img/mima@2x.png"  width="28px" height="28px"></template>
+      </el-input>
+    </el-form-item>
+    <el-form-item  label="" class="mima">
+      <el-radio class="mima1" >记住密码</el-radio>
+      <el-button  type="text" class="mima2">忘记密码</el-button>
     </el-form-item>
     <el-form-item  label="">
-      <el-button  type="primary" @click="login">登录</el-button>
-      <el-button  type="text" @click="register">注册账号</el-button>
+      <el-button  type="primary" @click="login" class="denglu">登录</el-button>
     </el-form-item>
   </el-form>
-  <div class="copyright"><span>CUIT Youth 校内网 管理系统 </span></div>
+
 </div>
 
 
@@ -33,60 +40,46 @@
           return{
             labelPosition:"top",
             form: {
-              username:"18581520828",
-              password:"123456",
+              userName:"wangshujun",
+              password:"666666",
             }
           }
       },
       methods:{
           login(){
+            let that=this;
             let type = "";
-
-            //判断是电话还是邮箱
-            // if (isNaN(this.username)){
-            //   type ="email"
-            // }else {
-            //   type = "phone"
-            // }
-            this.requestApiFnc("/login",'post2',{
-              username:this.form.username+"_phone",
+            this.requestApiFnc("/sysUser/login",'post2',{
+              userName:this.form.userName,
               password:this.form.password,
             },(res)=>{
-              console.log(res.data.map.token);
-              this.setStorage("login",this.$base64.encode(res.data.map.token));
-              this.tips("登录成功","success");
-              // this.$router.push({path: "/home"});
-              this.getUserInfo();
+              console.log("1111");
+              console.log(res.data);
+             // this.setStorage("login",this.$base64.encode(res.data.map.token));//获取token
+              that.setStorage("login",this.$base64.encode(res.data.token));
+              that.tips("登录成功","success");
+              console.log(res);
+              that.$router.push({path: "/home"});
+              that.getUserInfo();
             });
-
-
           },
         getUserInfo(){
-            this.requestApiFnc("/user/getUserByToken","get",{token:this.$base64.decode(this.getStorage('login'))},(res)=>{
-
+          that.requestApiFnc("/sysUser/login","post",{token:this.$base64.decode(this.getStorage('login'))},(res)=>{
               const {code,map:{user},message} = res.data;
               if (code === 200){
-
-                this.setStorage('user',this.$base64.encode(JSON.stringify(user)));
-                console.log(this.getStorage('user'));
+                that.setStorage('user',that.$base64.encode(JSON.stringify(user)));
+                /*console.log(this.getStorage('user'));
                 console.log(this.$base64.decode(this.getStorage('user')));
-                console.log(JSON.parse(this.$base64.decode(this.getStorage('user'))));
+                console.log(JSON.parse(this.$base64.decode(this.getStorage('user'))));*/
                 this.$router.push({path: "/home"});
               }
-
-
-
             })
         },
-
-
         register(){
           this.tips("注册还没有做","warning");
         },
-
       },
       created(){
-
         // 使用sessionStorage模拟登录状态
         var login = this.getStorage("login");
         console.log(login);
@@ -94,8 +87,8 @@
           console.log("没有登录");
         }else {
           console.log("已经登录了 直接跳到首页");
-          // this.$router.push({path: "/home"});
-          this.getUserInfo();
+          that.$router.push({path: "/home"});
+        //   this.getUserInfo();
         }
          // this.notify("warning","注意","账号和密码是假数据，直接点击登录即可~~")
       }
@@ -131,10 +124,8 @@
   height: 100%;
   overflow: hidden;
   position: relative;
-  /*background-color: #f3f3f3;*/
-  background-color: $baseColor1;
-  background-image: linear-gradient(120deg, $baseColor1 10%, #7bbdbc 80%);//background-image: linear-gradient(120deg, $baseColor1 10%, #7bbdbc 100%);
-  background-size: 300% 100%;
+  background-image: url("../../assets/other-img/bj@2x.png");
+  background-size: 100% 100%;
   animation: bg 10s ease-in-out infinite  alternate;
 
 
@@ -142,27 +133,27 @@
 
     .logo{
       position: absolute;
-      top:0%;
+      top:-10%;
       left: 50%;
-      width: 100px;
+      width: 400px;
       height: 100px;
       transform: translate(-50%,-50%);
       z-index: 100;
-      img{
-        width: 100%;
-        height: 100%;
-      }
+      text-align: center;
+      color: #fff;
+      font-family: "Microsoft YaHei";
+      font-size: 30px;
     }
 
-  background-color: white;
-    padding: 15px;
-    border-radius: 5px;
+  background-color:  rgba(255,255,255,0.6);
+    padding: 40px;
+    border-radius: 10px;
     width: 300px;
     height: 260px;
     color: $baseColor1;
     position: absolute;
-    top:50%;
-    left: 50%;
+    top:60%;
+    left: 70%;
     transform: translate(-50%,-50%);
     margin-top: -5%;
     transition: all 0.5s;
@@ -186,10 +177,25 @@
 
   }
 
-
-
-
-
+  .mima{
+    margin-top: 20px;
+  }
+  .mima1{
+    font-family: "Microsoft YaHei";
+    font-size: 12px;
+    color: black;
+    margin-left: 20px;
+  }
+  .mima2{
+    font-family: "Microsoft YaHei";
+    font-size: 13px;
+    color: #3f7bf6;
+    margin-left: 120px;
+  }
+  .denglu{
+    width: 300px;
+    height: 50px;
+  }
 
 }
 

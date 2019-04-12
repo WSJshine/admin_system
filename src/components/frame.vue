@@ -3,8 +3,8 @@
     <el-container class="frame-wrapper">
       <el-header class="frame-header">
         <div class="left wow fadeInLeft">
-          <div class="logo" v-show="isCollapse"><img src="../assets/logo.png" alt="logo"/></div>
-          <span><em>{{this.$store.getters.systemInfo.title}}</em> 管理系统</span>
+          <div class="logo"><img src="../assets/logo.png" alt="logo"/></div>
+          <!--<span><em>{{this.$store.getters.systemInfo.title}}</em> 管理系统</span>-->
           <el-tooltip class="item" effect="dark" content="点击这里可以展开和收起侧栏菜单~" manual value placement="right-start">
             <el-button style="margin-left: 20px;font-weight: bold" type="text" size="mini" @click="toggleNav"
                        icon="el-icon-menu">切换菜单
@@ -44,7 +44,7 @@
       </el-header>
       <el-container class="frame-container">
         <el-aside class="frame-aside">
-          <div class="logo" v-show="!isCollapse"><img src="../assets/logo.png" alt="logo"/></div>
+          <!--<div class="logo" v-show="!isCollapse"><img src="../assets/logo.png" alt="logo"/></div>-->
 
           <el-menu :default-active="activeMenuIndex" :router=true style="border: none;" :unique-opened=true
                    class="el-menu-vertical-demo"
@@ -54,48 +54,66 @@
                    active-text-color="#33a0d7">
             <el-menu-item index="/home">
 
-              <i class="fa fa-home"></i>
-              <span>首页</span>
+            <i class="fa fa-home"></i>
+            <span>首页</span>
 
+          </el-menu-item>
+
+            <el-menu-item index="/house">
+
+              <i class="fa fa-home"></i>
+              <span>房源管理</span>
             </el-menu-item>
+
+            <el-submenu index="4">
+              <template slot="title">
+                <i class="fa el-icon-printer"></i>
+                <span>设备管理</span>
+              </template>
+              <el-menu-item index="/repairs_order">智能锁</el-menu-item>
+              <el-menu-item index="/repairs_building">设备密码管理</el-menu-item>
+            </el-submenu>
 
             <el-submenu index="2">
               <template slot="title">
                 <i class="fa fa-newspaper-o"></i>
-                <span>新闻资讯</span>
+                <span>报表中心</span>
               </template>
-              <el-menu-item index="/releaseNews">新闻发布</el-menu-item>
-              <el-menu-item index="/newsManagement">新闻管理</el-menu-item>
-              <el-menu-item index="/newsType">新闻分类</el-menu-item>
-              <el-menu-item index="/comments">评论管理</el-menu-item>
-              <el-menu-item index="/slideshowManagement">轮播图管理</el-menu-item>
+              <!--<el-menu-item index="/releaseNews">新闻发布</el-menu-item>-->
+              <!--<el-menu-item index="/newsManagement">新闻管理</el-menu-item>
+              <el-menu-item index="/newsType">新闻分类</el-menu-item>-->
+              <!--<el-menu-item index="/comments">评论管理</el-menu-item>-->
+              <!--<el-menu-item index="/slideshowManagement">轮播图管理</el-menu-item>-->
+              <el-menu-item index="/newsManagement">开门记录</el-menu-item>
+              <el-menu-item index="/newsType">报警记录</el-menu-item>
             </el-submenu>
-            <el-submenu index="4">
-              <template slot="title">
-                <i class="fa fa-cog"></i>
-                <span>设施报修</span>
-              </template>
-              <el-menu-item index="/repairs_order">报修订单管理</el-menu-item>
-              <el-menu-item index="/repairs_building">楼宇管理</el-menu-item>
-            </el-submenu>
+
             <el-submenu index="5">
               <template slot="title">
                 <i class="fa fa-users"></i>
-                <span>用户</span>
+                <span>人员管理</span>
               </template>
-              <el-menu-item index="/userManagement">用户管理</el-menu-item>
-              <el-menu-item index="/role">角色与权限</el-menu-item>
+              <el-menu-item index="/comments">学生</el-menu-item>
+              <el-menu-item index="/slideshowManagement">教师</el-menu-item>
             </el-submenu>
 
 
             <el-submenu index="6">
               <template slot="title">
                 <i class="fa fa-cog"></i>
-                <span>系统设置</span>
+                <span>系统管理</span>
               </template>
-              <el-menu-item index="/config">基础信息</el-menu-item>
-              <el-menu-item index="/link">友情链接</el-menu-item>
+              <!--<el-menu-item index="/link">友情链接</el-menu-item>-->
+              <el-menu-item index="/userManagement">用户管理</el-menu-item>
+              <el-menu-item index="/role">角色管理</el-menu-item>
+              <el-menu-item index="/config">个人中心</el-menu-item>
             </el-submenu>
+
+            <el-menu-item index="/releaseNews">
+
+              <i class="fa el-icon-message"></i>
+              <span>消息管理</span>
+            </el-menu-item>
           </el-menu>
 
 

@@ -9,7 +9,7 @@
 <script>
   export default {
     name: 'App',
-    data() {
+   /* data() {
       return {
 
       }
@@ -21,24 +21,22 @@
     },
     methods:{
       getSystemInfo() {
-        this.requestApiFnc('/systemSetting/get','get',null,(res)=>{
-          const {code,map:{SystemSetting},message} = res.data;
+        this.requestApiFnc('/algorithm/encrypt','get',value=666,(res)=>{
+          /!*const {code,map:{SystemSetting},message} = res.data;
           if (code === 200){
             console.log(SystemSetting);
             this.$store.commit('setSystem',SystemSetting)
 
-          }
+          }*!/
+          console.log(message);
         })
       },
-
     },
     created(){
       this.getSystemInfo();
-      console.log(this.systemInfo);
-    }
-
-
-
+      //console.log(this.systemInfo);
+     // console.log("aaaaaaaaaa");
+    }*/
   };
 </script>
 

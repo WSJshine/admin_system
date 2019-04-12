@@ -4,8 +4,8 @@
     <el-row class="topArea wow fadeInDown" data-wow-delay="0.5s">
       <el-col :span="24">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>用户</el-breadcrumb-item>
-          <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+          <el-breadcrumb-item>人员管理</el-breadcrumb-item>
+          <el-breadcrumb-item>学生</el-breadcrumb-item>
         </el-breadcrumb>
 
       </el-col>
@@ -15,8 +15,8 @@
 
       <el-row class="headArea wow fadeInDown panelArea" data-wow-delay="0.3s">
         <el-col :span="24">
-          <span class="title">用户管理</span>
-          <span class="description">新增、删除、修改用户信息</span>
+          <span class="title">人员管理</span>
+          <!--<span class="description">新增、删除、修改用户信息</span>-->
         </el-col>
       </el-row>
 
@@ -63,7 +63,7 @@
             <el-table-column
              width="50"
              type="index"
-              label="#">
+              label="序号">
             </el-table-column>
             <el-table-column
 

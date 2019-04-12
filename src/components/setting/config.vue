@@ -3,8 +3,8 @@
     <el-row class="topArea wow fadeInDown" data-wow-delay="0.5s">
       <el-col :span="24">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>系统设置</el-breadcrumb-item>
-          <el-breadcrumb-item>基础信息</el-breadcrumb-item>
+          <el-breadcrumb-item>系统管理</el-breadcrumb-item>
+          <el-breadcrumb-item>个人中心</el-breadcrumb-item>
         </el-breadcrumb>
       </el-col>
     </el-row>
@@ -12,8 +12,7 @@
 
       <el-row class="headArea wow fadeInDown panelArea" data-wow-delay="0.3s">
         <el-col :span="24">
-          <span class="title">基础信息</span>
-          <span class="description">网站基础信息设置</span>
+          <span class="title">个人中心</span>
         </el-col>
       </el-row>
 
@@ -22,7 +21,7 @@
 
         <el-col :span="24">
           <el-form ref="form" :model="form" label-width="100px">
-            <el-form-item style="position: relative" label="网站LOGO">
+            <el-form-item style="position: relative" label="头像">
               <el-upload
                 :action="uploadUrl"
                 :limit="1"
@@ -36,25 +35,44 @@
               </el-upload>
               <img :src="form.logo" style="width: 150px;position: absolute;top:50%;transform: translateY(-50%);left: 400px"  alt="">
             </el-form-item>
-            <el-form-item label="网站标题">
-              <el-input v-model="form.title" placeholder="网站显示的标题"></el-input>
+            <el-form-item label="用户名">
+              <el-input v-model="form.title" placeholder="请输入用户名"></el-input>
             </el-form-item>
-            <el-form-item label="网站关键词">
-              <el-input v-model="form.keyword" placeholder="以英文逗号隔开 用于SEO优化"></el-input>
+            <el-form-item label="手机号">
+              <el-input v-model="form.keyword" placeholder="请输入手机号"></el-input>
             </el-form-item>
-            <el-form-item label="网站标语">
-              <el-input v-model="form.slogan" placeholder="网站slogan  宣传口号"></el-input>
+
+            <el-form-item label="邮箱">
+              <el-input v-model="form.slogan" placeholder="请输入邮箱"></el-input>
             </el-form-item>
-            <el-form-item label="网站描述">
-              <el-input type="textarea" v-model="form.remark" placeholder="描述网站的主要功能与内容 用于SEO优化"></el-input>
+
+
+
+            <el-form-item label="性别">
+              <el-radio v-model="radio" label="1">女</el-radio>
+              <el-radio v-model="radio" label="2">男</el-radio>
             </el-form-item>
-            <!--<el-form-item label="活动区域">-->
-            <!--<el-select v-model="form.region" placeholder="请选择活动区域">-->
-            <!--<el-option label="区域一" value="shanghai"></el-option>-->
-            <!--<el-option label="区域二" value="beijing"></el-option>-->
-            <!--</el-select>-->
-            <!--</el-form-item>-->
-            <el-form-item label="是否开启网站">
+
+            <el-form-item label="所在区域">
+            <el-select v-model="form.region" placeholder="请选择省份">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+            </el-select>
+              <el-select v-model="form.region" placeholder="请选择城市">
+                <el-option label="区域一" value="shanghai"></el-option>
+                <el-option label="区域二" value="beijing"></el-option>
+              </el-select>
+              <el-select v-model="form.region" placeholder="请选择县（区）">
+                <el-option label="区域一" value="shanghai"></el-option>
+                <el-option label="区域二" value="beijing"></el-option>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="详细地址">
+              <el-input type="textarea" v-model="form.remark" placeholder="请填写详细地址"></el-input>
+            </el-form-item>
+
+        <!--    <el-form-item label="是否开启网站">
               <el-switch v-model="form.open"></el-switch>
             </el-form-item>
             <el-form-item label="是否允许登录">
@@ -62,7 +80,8 @@
             </el-form-item>
             <el-form-item label="是否允许注册">
               <el-switch v-model="form.register"></el-switch>
-            </el-form-item>
+            </el-form-item>-->
+
 
 
             <el-form-item>
@@ -94,7 +113,8 @@
           login: false,
           register: false,
           logo: ''
-        }
+        },
+        radio: '1'
       }
     },
     computed:{
