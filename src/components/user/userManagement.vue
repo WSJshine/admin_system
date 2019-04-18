@@ -4,8 +4,8 @@
     <el-row class="topArea wow fadeInDown" data-wow-delay="0.5s">
       <el-col :span="24">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>人员管理</el-breadcrumb-item>
-          <el-breadcrumb-item>学生</el-breadcrumb-item>
+          <el-breadcrumb-item>系统管理</el-breadcrumb-item>
+          <el-breadcrumb-item>用户管理</el-breadcrumb-item>
         </el-breadcrumb>
 
       </el-col>
@@ -15,7 +15,7 @@
 
       <el-row class="headArea wow fadeInDown panelArea" data-wow-delay="0.3s">
         <el-col :span="24">
-          <span class="title">人员管理</span>
+          <span class="title">用户管理</span>
           <!--<span class="description">新增、删除、修改用户信息</span>-->
         </el-col>
       </el-row>
@@ -27,7 +27,7 @@
           <el-input placeholder="请输入搜索内容" v-model="search" class="input-with-select" size="small">
             <el-select v-model="search_select" slot="prepend" placeholder="请选择........">
               <!--<el-option label="ID" value="id"></el-option>-->
-              <el-option label="用户名" value="userName"></el-option>
+              <el-option label="账号" value="userName"></el-option>
               <el-option label="姓名" value="realName"></el-option>
               <el-option label="手机" value="phone"></el-option>
               <el-option label="邮箱" value="email"></el-option>
@@ -65,65 +65,62 @@
              type="index"
               label="序号">
             </el-table-column>
-            <el-table-column
 
-              prop="userName"
-              label="用户名">
-            </el-table-column>
             <el-table-column
-
               prop="realName"
               width="120"
               label="姓名">
             </el-table-column>
-            <el-table-column
 
+            <el-table-column
+              prop="userName"
+              label="账号">
+            </el-table-column>
+
+   <!--         <el-table-column
               prop="gender"
               width="50"
               label="性别">
-            </el-table-column>
-            <el-table-column
+            </el-table-column>-->
 
+            <el-table-column
               prop="role"
               width="120"
               label="角色">
             </el-table-column>
-            <el-table-column
 
+           <!-- <el-table-column
               prop="status"
               width="120"
               label="状态">
-            </el-table-column>
-            <el-table-column
+            </el-table-column>-->
 
+            <el-table-column
               width="150"
               prop="phone"
               label="手机">
             </el-table-column>
-            <el-table-column
 
+            <el-table-column
               prop="email"
               label="邮箱">
             </el-table-column>
-            <el-table-column
 
+  <!--          <el-table-column
               prop="userQq"
               width="150"
               label="QQ">
             </el-table-column>
-
             <el-table-column
-
               prop="createDate"
               width="160"
               label="注册时间">
             </el-table-column>
             <el-table-column
-
               prop="loginTime"
               width="160"
               label="最后登录时间">
-            </el-table-column>
+            </el-table-column>-->
 
             <el-table-column
               align="center"
@@ -180,7 +177,7 @@
 
     <el-dialog :append-to-body="true" :title="this.dialogText" @close="closeUserDialog" :visible.sync="dialogFormNew">
       <el-form :model="form_user" ref="userForm" :rules="formRulers" size="small">
-        <el-form-item label="用户名" :label-width="formLabelWidth" prop="userName">
+        <el-form-item label="账号" :label-width="formLabelWidth" prop="userName">
           <el-row>
             <el-col :span="12">
               <el-input v-model="form_user.userName" auto-complete="off" placeholder="（必填）"></el-input>
@@ -251,13 +248,13 @@
           </el-row>
         </el-form-item>
 
-        <el-form-item label="QQ" :label-width="formLabelWidth">
+      <!--  <el-form-item label="QQ" :label-width="formLabelWidth">
           <el-row>
             <el-col :span="12">
               <el-input v-model="form_user.userQq" auto-complete="off"></el-input>
             </el-col>
           </el-row>
-        </el-form-item>
+        </el-form-item>-->
 
 
       </el-form>
@@ -277,14 +274,14 @@
     data() {
       let checkUserName = (rule, value, callback) => {
         if (!value) {
-          return callback(new Error('用户名不能为空'));
+          return callback(new Error('账号不能为空'));
         }
         if (value.length < 3 || value.length > 15) {
-          return callback(new Error('用户名长度要求3-15字符'));
+          return callback(new Error('账号长度要求3-15字符'));
         }
         this.requestApi('checkName', function (v) {
           if (!v) {
-            return callback(new Error('该用户名不可用'));
+            return callback(new Error('该账号不可用'));
           } else {
             callback(); //这个会变绿
           }
@@ -371,7 +368,7 @@
           phone: "",
           email: "",
           password: "",
-          userQq: "",
+       //   userQq: "",
         },//新增 和 编辑 的数据
         dialogText: "",
         search: "",//搜索框
@@ -434,7 +431,7 @@
             phone: "",
             email: "",
             password: "",
-            userQq: "",
+        //    userQq: "",
           }
 
         } else if (type === 'edit') {
@@ -570,7 +567,7 @@
               gender: this.form_user.gender,
               phone: this.form_user.phone,
               userImg: "1",
-              userQq: this.form_user.userQq,
+          //    userQq: this.form_user.userQq,
               email: this.form_user.email,
               status: this.form_user.status,
             }).then((res) => {
@@ -599,7 +596,7 @@
               gender: this.form_user.gender,
               phone: this.form_user.phone,
               userImg: "1",
-              userQq: this.form_user.userQq,
+       //       userQq: this.form_user.userQq,
               email: this.form_user.email,
               status: this.form_user.status,
 
@@ -645,19 +642,26 @@
             }
             this.loading = true;
             // this.$axios.get("/user/getAll?pageNum=" + this.currentPage + "&pageSize=" + this.page_size).then((res) => {
-            this.$axios.get("/user/getAll",{
+            /*this.$axios.get("/user/getAll",{
               params:{
                 pageNum:this.currentPage,
                 pageSize:this.page_size,
-
               }
-            }).then((res) => {
+            })*/
+            this.$axios({//查看学校设备列表
+              method:'get',
+              url:'/device/list',
+              headers:{
+                'Authorization':'Bearer ' +sessionStorage.getItem("token")
+              },
+              params:{
+                pageNum:this.currentPage
+              }
+            } ).then((res) => {
 
               if (res.data.code === 200) {
 
                 let list = res.data.map.pageInfo.list;
-
-
                 this.page_total = res.data.map.pageInfo.total;
 
                 let _this = this;
@@ -668,12 +672,12 @@
                   } else if (item.status === 0) {
                     item.status = "封禁"
                   }
-                  item.createDate = _this.showTime(item.createDate);
+                  /*item.createDate = _this.showTime(item.createDate);
                   if (item.loginTime) {
                     item.loginTime = _this.showTime(item.loginTime);
                   } else {
                     item.loginTime = "暂无记录";
-                  }
+                  }*/
                   return item;
 
                 });
@@ -704,8 +708,6 @@
 
                 verifyCB(this.fromCheck1.userName);//回调  验证
                 this.form_user.hahah = "dd";
-
-
               } else if (res.data.code === 500) {
                 this.fromCheck1.userName = false;//验证不通过
 
@@ -806,12 +808,12 @@
                   } else if (item.status === 0) {
                     item.status = "封禁"
                   }
-                  item.createDate = _this.showTime(item.createDate);
+                 /* item.createDate = _this.showTime(item.createDate);
                   if (item.loginTime) {
                     item.loginTime = _this.showTime(item.loginTime);
                   } else {
                     item.loginTime = "暂无记录";
-                  }
+                  }*/
                   return item;
 
                 });

@@ -4,7 +4,6 @@
       <el-header class="frame-header">
         <div class="left wow fadeInLeft">
           <div class="logo"><img src="../assets/logo.png" alt="logo"/></div>
-          <!--<span><em>{{this.$store.getters.systemInfo.title}}</em> 管理系统</span>-->
           <el-tooltip class="item" effect="dark" content="点击这里可以展开和收起侧栏菜单~" manual value placement="right-start">
             <el-button style="margin-left: 20px;font-weight: bold" type="text" size="mini" @click="toggleNav"
                        icon="el-icon-menu">切换菜单
@@ -52,14 +51,13 @@
                    @close="handleClose" :collapse="isCollapse" background-color="#4f5254"
                    text-color="#fff"
                    active-text-color="#33a0d7">
+
             <el-menu-item index="/home">
+              <i class="fa fa-home"></i>
+              <span>首页</span>
+            </el-menu-item>
 
-            <i class="fa fa-home"></i>
-            <span>首页</span>
-
-          </el-menu-item>
-
-            <el-menu-item index="/house">
+            <el-menu-item index="/housing">
 
               <i class="fa fa-home"></i>
               <span>房源管理</span>
@@ -174,13 +172,13 @@
         const l = this.getStorage('login');
         const u = this.getStorage('user');
         // if (u && l) {//user你在登陆的时候存了吗，storage里面没有user，所以跳转到登陆了，但是登陆判断有login所以就跳转到home，然后就死循环；
-        if (l) {//j就改了一个地方，就是这里之前是if（u&&l）改成了if(l )因为你user在登陆的时候没有存，所以这里就不要判断了，等加上接口之后再判断user好
+     /*   if (l) {//j就改了一个地方，就是这里之前是if（u&&l）改成了if(l )因为你user在登陆的时候没有存，所以这里就不要判断了，等加上接口之后再判断user好
           this.user = {};//JSON.parse(this.$base64.decode(u));
           console.log(this.user);
         } else {
           // this.ele_alert("获取用户信息失败！", "error");
           this.$router.push({path: "/login"});
-        }
+        }*/
       }
 
     },

@@ -9,7 +9,7 @@ import ReleaseNews from '@/components/news/releaseNews'
 import SlideshowManagement from '@/components/news/slideshow-management'
 import NewsCatalogue from '@/components/news/newsCatalogue'
 import CommentManagement from '@/components/news/commentsManagement'
-import Link from '@/components/setting/link'
+import housing from '@/components/setting/housing'
 
 
 import Building from '@/components/repairs/building'
@@ -89,9 +89,9 @@ export default new Router({
           name: 'config',
           component: Config
         },{
-          path: 'link',
-          name: 'link',
-          component: Link
+          path: 'housing',
+          name: 'housing',
+          component: housing
         },{
           path: 'repairs_building',
           name: 'repairs_building',

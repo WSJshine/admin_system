@@ -13,20 +13,20 @@
 
     <el-row class="dataVisualization  panelArea">
       <el-col class="dataVisualization_item dataVisualization_item1 wow fadeInLeft" :span="6" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <div class="card" @mouseenter="displayChart(1)"><h3>设备数量<br/> <b>100</b><img src="../../assets/other-img/shebei@2x.png" height="50" width="50" class="img1"/></h3>
+        <div class="card"><h3>设备数量<br/> <b>{{this.deviceNumber}}</b><img src="../../assets/other-img/shebei@2x.png" height="50" width="50" class="img1"/></h3>
         </div>
       </el-col>
 
       <el-col class="dataVisualization_item dataVisualization_item2 wow fadeInLeft" :span="6" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <div class="card" @mouseenter="displayChart(2)"><h3>房源总数<br/> <b>1200</b><img src="../../assets/other-img/fangyuan@2x.png" height="50" width="50" class="img1"/></h3>
+        <div class="card"><h3>房源总数<br/> <b>{{this.roomTotal}}</b><img src="../../assets/other-img/fangyuan@2x.png" height="50" width="50" class="img1"/></h3>
         </div>
       </el-col>
       <el-col class="dataVisualization_item dataVisualization_item3 wow fadeInRight" :span="6" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <div class="card" @mouseenter="displayChart(3)"><h3>管理员人数<br/><b>20</b><img src="../../assets/other-img/kongzhi@2x.png" height="50" width="50" class="img1"/></h3>
+        <div class="card"><h3>管理员人数<br/><b>{{this.adminTotal}}</b><img src="../../assets/other-img/kongzhi@2x.png" height="50" width="50" class="img1"/></h3>
         </div>
       </el-col>
       <el-col class="dataVisualization_item dataVisualization_item4 wow fadeInRight" :span="6" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <div class="card" @mouseenter="displayChart(4)"><h3>用户总数<br/><b>200</b><img src="../../assets/other-img/yonghu@2x.png" height="50" width="50" class="img1"/></h3>
+        <div class="card"><h3>用户总数<br/><b>{{this.userTotal}}</b><img src="../../assets/other-img/yonghu@2x.png" height="50" width="50" class="img1"/></h3>
         </div>
       </el-col>
     </el-row>
@@ -74,13 +74,14 @@
         chartTitle:"报修处理情况统计（近10天）",
         chartType:"bar",
         activeName: 'tie',
-
+        adminTotal:'',//管理员总数
+        roomTotal:'',//房源总数
+        deviceNumber:'',//设备数量
+        userTotal:''//用户总数
       }
     },
     methods: {
-      displayChart(){
 
-      },
       drawChart(afresh) {
 
         let a=this.arrayData;
@@ -91,7 +92,7 @@
           t.push(a[i].timeRange);
           v.push(a[i].value);
         }
-
+//基于准备好的dom，初始化echarts图表
         let chartPanel = this.$echarts.init(document.getElementById('chart'));
         let chartPanel1 = this.$echarts.init(document.getElementById('chart1'));
         let chartPanel2 = this.$echarts.init(document.getElementById('chart2'));
@@ -117,6 +118,24 @@
           chartPanel3 = this.$echarts.init(document.getElementById('chart3'));
         }
 
+
+
+        this.$axios({
+          method:'get',
+          url:'/home',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          }
+        } ).then((res) => {
+          if (res.data.code === 0) {
+            this.tips("连接成功");
+            this.adminTotal=res.data.data.adminTotal;
+            this.deviceNumber=res.data.data.deviceNumber;
+            this.roomTotal=res.data.data.roomTotal;
+            this.userTotal=res.data.data.userTotal;
+
+            let todayAlarmTotal=res.data.data.todayAlarmTotal;//当日报警统计
+            let todayOpenLockCount = res.data.data.todayOpenLockCount;//当日时分段进出次数
         // 绘制图表
         chartPanel.setOption({
           animation: !afresh,//如果是重绘的地图 就关掉动画效果，这样就可以实现只在页面第一次加载的时候展示绘图动画setoption
@@ -157,53 +176,62 @@
           ]
         })
         // 中间环形图
-        chartPanel1.setOption({
-          animation: !afresh,//如果是重绘的地图 就关掉动画效果，这样就可以实现只在页面第一次加载的时候展示绘图动画setoption
-          tooltip: {
-            trigger: 'item',
-            formatter: "{a} <br/>{b}: {c} ({d}%)"
-          },
-          legend: {
-            orient: 'vertical',
-            x: 'right',
-            data:['防撬','劫持','假锁','离线','低电量']
-          },
-          color:['#3f78f6','#00e498','#ff5756','#ffb000',"#7940f4"],
-          title: {text: '当日报警统计'},
-          series: [
-            {
-              name:'访问来源',
-              type:'pie',
-              radius: ['50%', '70%'],
-              avoidLabelOverlap: false,
-              label: {
-                normal: {
-                  show: false,
-                  position: 'center'
-                },
-                emphasis: {
-                  show: true,
-                  textStyle: {
-                    fontSize: '30',
-                    fontWeight: 'bold'
-                  }
-                }
-              },
-              labelLine: {
-                normal: {
-                  show: false
-                }
-              },
-              data:[
-                {value:335, name:'防撬'},
-                {value:310, name:'劫持'},
-                {value:234, name:'假锁'},
-                {value:135, name:'离线'},
-                {value:1548, name:'低电量'}
-              ]
+
+            var dataName = [];
+            var dataObj = [];
+            console.log(todayAlarmTotal);
+            for(var i=0;i<todayAlarmTotal.length;i++) {
+              // dataarra.push(todayAlarmTotal[i].alarmDeviceTypeString);
+              // dataarrb.push(todayAlarmTotal[i].number);
+              var dataobj = {};
+              dataName.push(todayAlarmTotal[i].alarmDeviceTypeString);
+              dataobj.name = todayAlarmTotal[i].alarmDeviceTypeString;
+              dataobj.value = todayAlarmTotal[i].number;
+              dataObj.push(dataobj);
             }
-          ]
-        })
+            console.log(dataObj);
+              chartPanel1.setOption({
+                animation: !afresh,//如果是重绘的地图 就关掉动画效果，这样就可以实现只在页面第一次加载的时候展示绘图动画setoption
+                tooltip: {
+                  trigger: 'item',
+                  formatter: "{a} <br/>{b}: {c} ({d}%)"
+                },
+                legend: {
+                  orient: 'vertical',
+                  x: 'right',
+                  data: dataName
+                },
+                color: ['#3f78f6', '#00e498', '#ff5756', '#ffb000', "#7940f4"],
+                title: {text: '当日报警统计'},
+                series: [
+                  {
+                    name: '访问来源',
+                    type: 'pie',
+                    radius: ['50%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                      normal: {
+                        show: false,
+                        position: 'center'
+                      },
+                      emphasis: {
+                        show: true,
+                        textStyle: {
+                          fontSize: '30',
+                          fontWeight: 'bold'
+                        }
+                      }
+                    },
+                    labelLine: {
+                      normal: {
+                        show: false
+                      }
+                    },
+                    data: dataObj
+                  }
+                ]
+              })
+
         // 右边环形图
         chartPanel2.setOption({
           animation: !afresh,//如果是重绘的地图 就关掉动画效果，这样就可以实现只在页面第一次加载的时候展示绘图动画setoption
@@ -251,19 +279,27 @@
         })
         // 绘制下边那个光滑曲线图
         //
+        var dataarr = [];
+        for(var j=0;j<todayOpenLockCount.length;j++){
+          dataarr.push(todayOpenLockCount[j].count);
+        }
         chartPanel3.setOption({
           animation: !afresh,//如果是重绘的地图 就关掉动画效果，这样就可以实现只在页面第一次加载的时候展示绘图动画setoption
           xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: ['0点', '1点', '2点', '3点', '4点', '5点', '6点', '7点', '8点', '9点', '10点', '11点', '12点', '13点', '14点', '15点', '16点', '17点', '18点', '19点', '20点', '21点', '22点', '23点', '24点']
+            data: ['0点', '1点', '2点', '3点', '4点', '5点', '6点', '7点', '8点', '9点', '10点', '11点', '12点', '13点', '14点', '15点', '16点', '17点', '18点', '19点', '20点', '21点', '22点', '23点']
           },
           yAxis: {
             type: 'value'
           },
           title: {text: '当日时分段进出次数趋势图'},
           series: [{
-            data: [820, 932, 901, 934, 290, 330, 720, 820, 1320, 920, 320, 730, 520, 620, 220, 420, 620, 320, 520, 720, 820, 320, 620, 820,688],
+            data: dataarr,
+              // [
+              // todayOpenLockCount[j].count
+              //["","",""]以前是这样写死的
+              // ],
             type: 'line',
             areaStyle: {},
             smooth:true
@@ -271,27 +307,37 @@
           itemStyle: {
             color: 'rgba(255,0,0,0.5)'
           }
-        })
-      }
+         })
 
+
+
+
+
+          } else {
+            this.tips(res.data.message,"warning");
+          }
+          this.loading = false;
+        }).catch((error) => {
+          this.tips( "系统出错！","error");
+          console.log(error);
+          this.loading = false;
+        });
+
+
+
+      }
     },
     mounted() {
-
       this.drawChart();
       let width = "";
       width = document.getElementsByClassName("c-main")[0].clientWidth;
-
-
       this.getSize=setInterval(() => {
         try {
-
-
         let w = document.getElementsByClassName("c-main")[0].clientWidth;
         if (w !== width) {
           this.drawChart(true);
           width = w;
         }
-
         }catch(e){
           console.log("Failed to get window size");
         }
@@ -302,6 +348,7 @@
     },
     created() {
       this.toTop();
+
     }
   }
 </script>
