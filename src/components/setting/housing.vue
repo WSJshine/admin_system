@@ -209,9 +209,9 @@
               <el-input v-model="form_user.deviceName" auto-complete="off" placeholder="（必填）"></el-input>
             </el-col>
           </el-row>
-        </el-form-item>
+        </el-form-item>-->
 
-        <el-form-item v-if="this.action==='add'" label="IMEI值" prop="imei" :label-width="formLabelWidth" >
+      <!--  <el-form-item v-if="this.action==='add'" label="IMEI值" prop="imei" :label-width="formLabelWidth" >
           <el-row>
             <el-col :span="12">
               <el-input v-model="form_user.imei"  auto-complete="off" placeholder="（必填）"></el-input>
@@ -250,7 +250,7 @@
   export default {
     name: "housing",
     data() {
-     /* let checkdeviceName = (rule, value, callback) => {
+   /*   let checkdeviceName = (rule, value, callback) => {
         if (!value) {
           return callback(new Error('设备名称不能为空'));
         }
@@ -291,7 +291,7 @@
         dialogFormNew: false,// 添加 或 编辑 的 模态框  是否显示
         formLabelWidth: "80px",//模态框右侧的label间距
         formRulers: {
-         /* deviceName: [
+          /*deviceName: [
             {validator: checkdeviceName, trigger: 'blur'},
           ],*/
           /* position: [
@@ -300,7 +300,7 @@
           remarks: [
             {validator: checkremarks, trigger: 'blur'}
           ],
-       /*   imei: [
+         /* imei: [
             {validator: checkPassword, trigger: 'blur'}
           ]*/
         },
@@ -310,7 +310,8 @@
           remarks: false,
         },
         form_user: {
-        /*  deviceName: "",*/
+          /*deviceName: "",
+          imei: "",*/
           floorName: "",
           roomNumber: "",
           roomName:"",
@@ -318,7 +319,7 @@
           roomCurrentHeadcount: "",
           roomSharingPolicy:"",
           remarks: "",
-      //    imei: "",
+
         },//新增 和 编辑 的数据
         dialogText: "",
         search: "",//搜索框
@@ -462,10 +463,11 @@
         } else if (type === 'add') {
           this.id = "";
           this.action = "add";
-          this.dialogText = "新增设备";
+          this.dialogText = "新增房源";
           this.dialogFormNew = true;
           this.form_user = {
-          /*  deviceName: "",*/
+            /*deviceName: "",
+            imei: "",*/
             floorName: "",
             roomNumber: "",
             roomName:"",
@@ -473,7 +475,7 @@
             roomCurrentHeadcount: "",
             roomSharingPolicy:"",
             remarks: "",
-       //     imei: "",
+
           }
         } else if (type === 'edit') {
           this.action = "edit";
@@ -489,7 +491,7 @@
             this.form_user.roomCurrentHeadcount = "0"
           }*/
        //   this.form_user.imei = "";
-          this.dialogText = "编辑设备信息";
+          this.dialogText = "编辑房源信息";
           this.dialogFormNew = true;
         }
       },
@@ -520,7 +522,7 @@
             this.dialogFormNew = false;
             this.action = "";
           } else {
-            console.log("新增设备");
+            console.log("新增房源");
             //首先打印一下this.$refs[formName]，检查是否拿到了正确的需要验证的form。其次在拿到了正确的form后，检查该form上添加的表单验证是否正确
             this.$refs["userForm"].validate((valid) => {
               console.log("1111");
@@ -559,8 +561,8 @@
               method:'post',
               url:'/schoolRoom',
               data: {
-           /*     deviceName: this.form_user.deviceName,//设备名*/
-            //    imei: this.form_user.imei,//IMEI号
+                /*deviceName: this.form_user.deviceName,//设备名
+                imei: this.form_user.imei,//IMEI号*/
                 roomNumber: this.form_user.roomNumber,//房间号
                 roomName: this.form_user.roomName,//房间名
                 floorName: this.form_user.floorName,//楼层
@@ -586,10 +588,10 @@
             );
             break;
           case "edit":
-            this.$axios.put("/device", {
+            this.$axios.put("/schoolRoom", {
                 id: this.id,
-            /*    deviceName: this.form_user.deviceName,*/
-          //      imei: this.form_user.imei,
+               /* deviceName: this.form_user.deviceName,
+                imei: this.form_user.imei,*/
                 roomNumber: this.form_user.roomNumber,
                 roomName: this.form_user.roomName,
                 floorName: this.form_user.floorName,
@@ -614,7 +616,7 @@
             });
             break;
           case "delete":
-            this.$axios.delete("/device", {//删除学校设备
+            this.$axios.delete("/schoolRoom", {//删除学校设备
               params: {
                 ids: this.id
               },
@@ -672,27 +674,27 @@
               this.loading = false;
             });
             break;
-     /*     case "checkName":
+          case "checkName":
             this.$axios.get("/user/checkName", {
               params: {
                 id: this.id,
               //  deviceName: this.form_user.deviceName,
               }
             }).then((res) => {
-              /!*if (res.data.code === 200) {
+              /*if (res.data.code === 200) {
                 this.fromCheck1.deviceName = true;//验证通过
                 verifyCB(this.fromCheck1.deviceName);//回调  验证
                 this.form_user.hahah = "dd";
               } else if (res.data.code === 500) {
                 this.fromCheck1.deviceName = false;//验证不通过
                 verifyCB(this.fromCheck1.deviceName);//回调 弹出错误验证
-              }*!/
+              }*/
               this.tips( "系统出错！");
             }).catch((error) => {
               this.tips( "系统出错！","error");
               console.log(error)
             });
-            break;*/
+            break;
           case "checkremarks":
             let _this = this;
             console.log(_this.form_user);

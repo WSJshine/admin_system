@@ -20,68 +20,32 @@
 
       <el-row class="panelArea ">
 
-        <el-col :span="8" :offset="12" :md="8" :lg="8" :xs="24" :sm="24">
+        <el-col :span="18" :offset="1" :md="16" :lg="16" :xs="3" :sm="24">
 
-<!--          <el-col :span="2" :offset="4" :md="2" :lg="2" :xs="8" :sm="8">-->
-            <el-input placeholder="请输入搜索内容" v-model="search" class="input-with-select" size="small">
-              <el-select v-model="search_select" slot="prepend" placeholder="请选择........">
-                <el-option label="设备名称" value="deviceName"></el-option>
-                <el-option label="设备类型" value="deviceTypeString"></el-option>
-              </el-select>
-              <el-button slot="append" @click="requestApi('search')" icon="el-icon-search"></el-button>
-            </el-input>
-<!--          </el-col>-->
-       <!--   <el-col :span="2" :offset="4" :md="2" :lg="2" :xs="8" :sm="8">
-            <el-input placeholder="请输入搜索内容" v-model="search" class="input-with-select" size="small">
-              <el-select v-model="search_select" slot="prepend" placeholder="请选择........">
-                <el-option label="设备状态" value="deviceName"></el-option>
-                <el-option label="设备类型" value="deviceTypeString"></el-option>
-              </el-select>
-              <el-button slot="append" @click="requestApi('search')" icon="el-icon-search"></el-button>
-            </el-input>
-          </el-col>
-          <el-col :span="2" :offset="4" :md="2" :lg="2" :xs="8" :sm="8">
-            <el-input placeholder="请输入搜索内容" v-model="search" class="input-with-select" size="small">
-              <el-select v-model="search_select" slot="prepend" placeholder="请选择........">
-                <el-option label="设备位置" value="deviceName"></el-option>
-                <el-option label="设备类型" value="deviceTypeString"></el-option>
-              </el-select>
-              <el-button slot="append" @click="requestApi('search')" icon="el-icon-search"></el-button>
-            </el-input>
-          </el-col>-->
-
-
-        </el-col>
-
-       <!-- <el-form :inline="true" class="demo-form-inline">
+        <el-form :inline="true" :model="formInline" class="demo-form-inline">
           <el-form-item label="设备名称">
-            <el-input  placeholder="设备名称"  size="small"></el-input>
+            <el-input  placeholder="设备名称" v-model="formInline.deviceName" size="small"></el-input>
           </el-form-item>
           <el-form-item label="设备类型">
-            <el-select  placeholder="设备类型"  size="small">
-              <el-option label="智能锁1" ></el-option>
-              <el-option label="智能锁2"></el-option>
+            <el-select  placeholder="设备类型" v-model="formInline.deviceTypeString" size="small">
+              <el-option label="智能锁1" value="shanghai"></el-option>
+              <el-option label="智能锁2" value="beijing"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="设备状态">
-            <el-select  placeholder="设备状态"  size="small">
-              <el-option label="在线" ></el-option>
-              <el-option label="离线"></el-option>
+            <el-select  placeholder="设备状态" v-model="formInline.deviceStatus" size="small">
+              <el-option label="在线" value="1"></el-option>
+              <el-option label="离线" value="0"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="requestApi('search')"> 查询</el-button>
+            <el-button type="primary" @click="onSubmit"> 查询</el-button>
           </el-form-item>
-        </el-form>-->
+        </el-form>
+        </el-col>
 
-
-        <el-col :span="4" :md="4" :lg="4" :xs="24" :sm="24"
+        <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
                 style="text-align: left;box-sizing: border-box;padding-left: 25px">
-        <!--  <el-tooltip content="刷新" placement="top">
-            <el-button type="primary" icon="el-icon-refresh" @click="refresh" size="small"
-                       plain></el-button>
-          </el-tooltip>-->
-
           <el-tooltip content="新增" placement="top">
             <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
           </el-tooltip>
@@ -215,8 +179,8 @@
 
         <el-form-item label="设备状态" :label-width="formLabelWidth">
           <el-select v-model="form_user.deviceStatus" placeholder="请选择状态">
-            <el-option label="正常" value="1"></el-option>
-            <el-option label="封禁" value="0"></el-option>
+            <el-option label="在线" value="1"></el-option>
+            <el-option label="离线" value="0"></el-option>
           </el-select>
         </el-form-item>
 
@@ -356,12 +320,21 @@
           remarks: "",
           imei: "",
         },//新增 和 编辑 的数据
+
         dialogText: "",
 
         search: "",//搜索框
         search_select: "deviceName",//搜索框左侧下拉数据
 
         tableData: [],//表单数据源
+
+
+//查询
+        formInline: {
+          deviceName: '',
+          deviceTypeString: '',
+          deviceStatus:''
+        }
       }
     },
     methods: {
@@ -483,10 +456,6 @@
           }
         }
       },
-  /*    refresh(){
-        this.search="";
-        this.requestApi("getUser");
-      },*/
       requestApi(action, verifyCB) {
 
         switch (action) {
@@ -716,6 +685,44 @@
             break;
         }
       },
+
+      onSubmit() {
+        this.$axios({//查询
+          method:'get',
+          url:'/device/list',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          },
+          params:{
+            pageNum:this.currentPage,
+            deviceName: this.formInline.deviceName,
+            deviceTypeString: this.formInline.deviceTypeString,
+            deviceStatus: this.formInline.deviceStatus
+          }
+        } ).then((res) => {
+          if (res.data.code === 0) {
+            let list = res.data.data.list;
+            this.page_total = res.data.data.pageSum;
+            this.tableData = list.map(function (item) {
+              if (item.deviceStatus === 1) {
+                item.deviceStatus = "在线"
+              } else if (item.deviceStatus === 0) {
+                item.deviceStatus = "离线"
+              } else {
+                item.loginTime = "暂无记录";
+              }
+              return item;
+            });
+          } else {
+            this.tips(res.data.message,"warning");
+          }
+          this.loading = false;
+        }).catch((error) => {
+          this.tips( "系统出错！","error");
+          console.log(error);
+          this.loading = false;
+        });
+      }
     }, created() {
       this.requestApi("getUser");
     }

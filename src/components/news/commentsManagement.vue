@@ -7,7 +7,6 @@
           <el-breadcrumb-item>人员管理</el-breadcrumb-item>
           <el-breadcrumb-item>学生</el-breadcrumb-item>
         </el-breadcrumb>
-
       </el-col>
     </el-row>
 
@@ -19,37 +18,44 @@
         </el-col>
       </el-row>
 
-
       <el-row class="panelArea ">
 
-        <el-col :span="8" :offset="12" :md="8" :lg="8" :xs="24" :sm="24">
-          <el-input placeholder="请输入搜索内容" v-model="search" class="input-with-select" size="small">
-            <el-select v-model="search_select" slot="prepend" placeholder="请选择........">
-              <el-option label="头像" value="deviceName"></el-option>
-            </el-select>
-            <el-button slot="append" @click="requestApi('search')" icon="el-icon-search"></el-button>
-          </el-input>
-        </el-col>
-        <el-col :span="4" :md="4" :lg="4" :xs="24" :sm="24"
-                style="text-align: left;box-sizing: border-box;padding-left: 25px">
-          <el-tooltip content="刷新" placement="top">
-            <el-button type="primary" icon="el-icon-refresh" @click="refresh" size="small"
-                       plain></el-button>
-          </el-tooltip>
+        <el-col :span="18" :offset="1" :md="16" :lg="16" :xs="3" :sm="24">
 
+          <el-form :inline="true" :model="formInline" class="demo-form-inline">
+            <el-form-item label="姓名">
+              <el-input  placeholder="姓名" v-model="formInline.name" size="small"></el-input>
+            </el-form-item>
+            <el-form-item label="性别">
+              <el-select  placeholder="性别" v-model="formInline.gender" size="small">
+                <el-option label="女" value="0"></el-option>
+                <el-option label="男" value="1"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="联系方式">
+              <el-input  placeholder="联系方式" v-model="formInline.phoneNumber" size="small"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="onSubmit"> 查询</el-button>
+            </el-form-item>
+          </el-form>
+        </el-col>
+
+        <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
+                style="text-align: left;box-sizing: border-box;padding-left: 25px">
           <el-tooltip content="新增" placement="top">
             <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
           </el-tooltip>
-
+          <el-tooltip content="导出报表" placement="top">
+            <el-button type="primary"  icon="el-icon-download" size="small" plain></el-button>
+          </el-tooltip>
         </el-col>
 
 
       </el-row>
 
       <el-row class="panelArea">
-        <!-- :header-cell-style="{background:' #33a0d7',color:'white'}" 表格的属性 蓝色背景-->
         <el-col :span="24">
-          <!--v-loading="loading"-->
           <el-table
             :data="tableData"
             border
@@ -62,44 +68,43 @@
             </el-table-column>
 
             <el-table-column
-              prop="deviceName"
+              prop="name"
               label="头像">
             </el-table-column>
 
             <el-table-column
               prop="name"
-              width="120"
               label="姓名">
             </el-table-column>
 
             <el-table-column
               prop="gender"
-              width="90"
+              width="120"
               label="性别">
             </el-table-column>
 
             <el-table-column
               prop="age"
-              width="120"
+              width="90"
               label="年龄">
+            </el-table-column>
+
+            <el-table-column
+              prop="batteryLevel"
+              width="120"
+              label="电池电量">
             </el-table-column>
 
             <el-table-column
               prop="signalLevel"
               width="120"
+              label="信号强度">
+            </el-table-column>
+
+            <el-table-column
+              width="150"
+              prop="position"
               label="职位">
-            </el-table-column>
-
-            <el-table-column
-              width="150"
-              prop="phoneNumber"
-              label="联系方式">
-            </el-table-column>
-
-            <el-table-column
-              width="150"
-              prop="room"
-              label="宿舍号">
             </el-table-column>
 
             <el-table-column
@@ -138,7 +143,7 @@
 
     <el-dialog
       :append-to-body="true"
-      title="删除设备"
+      title="删除学生"
       :visible.sync="dialogVisible"
       width="30%">
       <span>{{this.dialogText}}</span>
@@ -151,22 +156,6 @@
 
     <el-dialog :append-to-body="true" :title="this.dialogText" @close="closeUserDialog" :visible.sync="dialogFormNew">
       <el-form :model="form_user" ref="userForm" :rules="formRulers" size="small">
-
-
-
-        <el-form-item label="头像" :label-width="formLabelWidth" prop="deviceName">
-
-
-
-
-
-          <el-row>
-            <el-col :span="12">
-              <el-input v-model="form_user.deviceName" auto-complete="off" placeholder="（必填）"></el-input>
-            </el-col>
-          </el-row>
-        </el-form-item>
-
         <el-form-item label="姓名" :label-width="formLabelWidth" prop="name">
           <el-row>
             <el-col :span="12">
@@ -175,32 +164,41 @@
           </el-row>
         </el-form-item>
 
-        <el-form-item label="年龄" :label-width="formLabelWidth" prop="age">
+        <el-form-item label="年龄" :label-width="formLabelWidth" prop="gender">
           <el-row>
             <el-col :span="12">
-              <el-input v-model="form_user.age" auto-complete="off" ></el-input>
+              <el-input v-model="form_user.age" auto-complete="off"  placeholder="请输入学生年龄"></el-input>
             </el-col>
           </el-row>
         </el-form-item>
-
 
         <el-form-item label="性别" :label-width="formLabelWidth">
           <el-select v-model="form_user.gender" placeholder="请选择性别">
-            <el-option label="未知" value="0"></el-option>
             <el-option label="男" value="1"></el-option>
-            <el-option label="女" value="2"></el-option>
+            <el-option label="女" value="0"></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item label="职位" :label-width="formLabelWidth" prop="signalLevel">
+        <el-form-item label="电池电量" :label-width="formLabelWidth" prop="batteryLevel">
           <el-row>
             <el-col :span="12">
-              <el-input v-model="form_user.signalLevel" auto-complete="off" ></el-input>
+              <el-input v-model="form_user.batteryLevel" auto-complete="off" :disabled="true" placeholder="100"></el-input>
             </el-col>
           </el-row>
         </el-form-item>
 
-        <el-form-item v-if="this.action==='add'" label="IMEI值" prop="imei" :label-width="formLabelWidth" >
+
+
+
+        <el-form-item label="信号强度" :label-width="formLabelWidth" prop="signalLevel">
+          <el-row>
+            <el-col :span="12">
+              <el-input v-model="form_user.signalLevel" auto-complete="off" :disabled="true" placeholder="5"></el-input>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+       <!-- <el-form-item v-if="this.action==='add'" label="IMEI值" prop="imei" :label-width="formLabelWidth" >
           <el-row>
             <el-col :span="12">
               <el-input v-model="form_user.imei"  auto-complete="off" placeholder="（必填）"></el-input>
@@ -214,13 +212,13 @@
                         placeholder="（不填写此处将不会修改IMEI值）"></el-input>
             </el-col>
           </el-row>
-        </el-form-item>
+        </el-form-item>-->
 
 
-        <el-form-item label="联系方式" :label-width="formLabelWidth" prop="phoneNumber">
+        <el-form-item label="职位" :label-width="formLabelWidth" prop="position">
           <el-row>
             <el-col :span="12">
-              <el-input v-model="form_user.phoneNumber" auto-complete="off"></el-input>
+              <el-input v-model="form_user.position" auto-complete="off"></el-input>
             </el-col>
           </el-row>
         </el-form-item>
@@ -248,22 +246,23 @@
   export default {
     name: "commentsManagement",
     data() {
-      let checkdeviceName = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error('头像不能为空'));
-        }
-        if (value.length < 3 || value.length > 15) {
-          return callback(new Error('头像长度要求3-15字符'));
-        }else{
-          callback();
-        }
-      };
-      /*      let checkphoneNumber = (rule, value, callback) => {
+
+      /*  let checkname = (rule, value, callback) => {
+          if (!value) {
+            return callback(new Error('姓名不能为空'));
+          }
+          if (value.length < 3 || value.length > 15) {
+            return callback(new Error('姓名长度要求3-15字符'));
+          }else{
+            callback();
+          }
+        };*/
+      /*      let checkposition = (rule, value, callback) => {
               if (!value) {
-                return callback(new Error('联系方式不能为空'));
+                return callback(new Error('职位不能为空'));
               }
               if (value.length < 3 || value.length > 15) {
-                return callback(new Error('联系方式长度要求3-15字符'));
+                return callback(new Error('职位长度要求3-15字符'));
               }else {
                 callback(); //这个会变绿
               }
@@ -299,11 +298,11 @@
         dialogFormNew: false,// 添加 或 编辑 的 模态框  是否显示
         formLabelWidth: "80px",//模态框右侧的label间距
         formRulers: {
-          deviceName: [
-            {validator: checkdeviceName, trigger: 'blur'},
-          ],
-          /* phoneNumber: [
-             {validator: checkphoneNumber, trigger: 'blur'}
+          /* name: [
+             {validator: checkname, trigger: 'blur'},
+           ],*/
+          /* position: [
+             {validator: checkposition, trigger: 'blur'}
            ],*/
           remarks: [
             {validator: checkremarks, trigger: 'blur'}
@@ -312,25 +311,36 @@
             {validator: checkPassword, trigger: 'blur'}
           ]
         },
-        fromCheck1: {
-          deviceName: false,
-          phoneNumber: false,
-          remarks: false,
-        },
+        /*   fromCheck1: {
+             name: false,
+             position: false,
+             remarks: false,
+           },*/
         form_user: {
-          deviceName: "",
-          signalLevel: "",
           name: "",
-          age: "",
-          gender: "1",
-          phoneNumber: "",
+          signalLevel: "",
+          gender: "",
+          batteryLevel: "",
+          age: "1",
+          position: "",
           remarks: "",
           imei: "",
         },//新增 和 编辑 的数据
+
         dialogText: "",
+
         search: "",//搜索框
-        search_select: "deviceName",//搜索框左侧下拉数据
+        search_select: "name",//搜索框左侧下拉数据
+
         tableData: [],//表单数据源
+
+
+//查询
+        formInline: {
+          name: '',
+          gender: '',
+          phoneNumber:''
+        }
       }
     },
     methods: {
@@ -371,12 +381,12 @@
           this.dialogText = "新增设备";
           this.dialogFormNew = true;
           this.form_user = {
-            deviceName: "",
-            signalLevel: "",
             name: "",
-            age: "",
-            gender: "1",
-            phoneNumber: "",
+            signalLevel: "",
+            gender: "",
+            batteryLevel: "",
+            age: "1",
+            position: "",
             remarks: "",
             imei: "",
           }
@@ -388,10 +398,10 @@
               this.form_user[item] = data[item];
             }
           }
-          if (this.form_user.gender === "在线") {
-            this.form_user.gender = "1"
-          } else if (this.form_user.gender === "离线") {
-            this.form_user.gender = "0"
+          if (this.form_user.age === "在线") {
+            this.form_user.age = "1"
+          } else if (this.form_user.age === "离线") {
+            this.form_user.age = "0"
           }
           this.form_user.imei = "";
           this.dialogText = "编辑设备信息";
@@ -452,26 +462,22 @@
           }
         }
       },
-      refresh(){
-        this.search="";
-        this.requestApi("getUser");
-      },
       requestApi(action, verifyCB) {
 
         switch (action) {
           case "add":
             this.$axios({
               method:'post',
-              url:'/device',
+              url:'/schoolBasicPersonnelInfo',
               data: {
-                deviceName: this.form_user.deviceName,//设备名
+                name: this.form_user.name,//设备名
                 imei: this.form_user.imei,//IMEI号
-                name: this.form_user.name,//姓名
-                signalLevel: this.form_user.signalLevel,
-                age: this.form_user.age,
-                phoneNumber: this.form_user.phoneNumber,
-                remarks: this.form_user.remarks,//备注
                 gender: this.form_user.gender,//性别
+                signalLevel: this.form_user.signalLevel,
+                batteryLevel: this.form_user.batteryLevel,
+                position: this.form_user.position,
+                remarks: this.form_user.remarks,//备注
+                age: this.form_user.age,//年龄
               },
               headers:{
                 'Authorization':'Bearer ' +sessionStorage.getItem("token")
@@ -490,16 +496,16 @@
             );
             break;
           case "edit":
-            this.$axios.put("/device", {
+            this.$axios.put("/schoolBasicPersonnelInfo", {
                 id: this.id,
-                deviceName: this.form_user.deviceName,
-                imei: this.form_user.imei,
                 name: this.form_user.name,
-                signalLevel: this.form_user.signalLevel,
-                age: this.form_user.age,
-                phoneNumber: this.form_user.phoneNumber,
-                remarks: this.form_user.remarks,
+                imei: this.form_user.imei,
                 gender: this.form_user.gender,
+                signalLevel: this.form_user.signalLevel,
+                batteryLevel: this.form_user.batteryLevel,
+                position: this.form_user.position,
+                remarks: this.form_user.remarks,
+                age: this.form_user.age,
               },
               {
                 headers:{
@@ -517,7 +523,7 @@
             });
             break;
           case "delete":
-            this.$axios.delete("/device", {//删除学校设备
+            this.$axios.delete("/schoolBasicPersonnelInfo", {//删除学生
               params: {
                 ids: this.id
               },
@@ -541,7 +547,6 @@
               return;
             }
             this.loading = true;
-            // this.$axios.get("/user/getAll?pageNum=" + this.currentPage + "&pageSize=" + this.page_size).then((res) => {
             this.$axios({//查看学生列表
               method:'get',
               url:'/schoolBasicPersonnelInfo/list',
@@ -556,12 +561,10 @@
                 let list = res.data.data.list;
                 this.page_total = res.data.data.pageSum;
                 this.tableData = list.map(function (item) {
-                  if (item.gender === 1) {
-                    item.gender = "男"
-                  } else if (item.gender === 0) {
-                    item.gender = "未知"
-                  }else if (item.gender === 2) {
-                    item.gender = "女"
+                  if (item.age === 1) {
+                    item.age = "在线"
+                  } else if (item.age === 0) {
+                    item.age = "离线"
                   } else {
                     item.loginTime = "暂无记录";
                   }
@@ -577,66 +580,48 @@
               this.loading = false;
             });
             break;
-          case "checkName":
-            this.$axios.get("/user/checkName", {
-              params: {
-                id: this.id,
-                deviceName: this.form_user.deviceName,
-              }
-            }).then((res) => {
-              if (res.data.code === 0) {
-                this.fromCheck1.deviceName = true;//验证通过
-                verifyCB(this.fromCheck1.deviceName);//回调  验证
-                this.form_user.hahah = "dd";
-              } else if (res.data.code === 500) {
-                this.fromCheck1.deviceName = false;//验证不通过
-                verifyCB(this.fromCheck1.deviceName);//回调 弹出错误验证
-              }
-            }).catch((error) => {
-              this.tips( "系统出错！","error");
-              console.log(error)
-            });
-            break;
-          case "checkremarks":
-            let _this = this;
-            console.log(_this.form_user);
-            this.$axios.get("/user/checkremarks", {
-              params: {
-                id: this.id,
-                remarks: this.form_user.remarks,
-              }
-            }).then(function (res) {
-              if (res.data.code === 200) {
-                _this.fromCheck1.remarks = true;//验证通过
-                verifyCB(_this.fromCheck1.remarks);//回调  验证
-              } else if (res.data.code === 500) {
-                _this.fromCheck1.remarks = false;//验证不通过
-                verifyCB(_this.fromCheck1.remarks);//回调  验证
-              }
-            }).catch((error) => {
-              this.tips( "系统出错！","error");
-              console.log(error)
-            });
-            break;
-          case "checkphoneNumber":
-            this.$axios.get("/user/checkphoneNumber", {
-              params: {
-                id: this.id,
-                phoneNumber: this.form_user.phoneNumber,
-              }
-            }).then((res) => {
-              if (res.data.code === 200) {
-                this.fromCheck1.phoneNumber = true;//验证通过
-                verifyCB(this.fromCheck1.phoneNumber);//回调  验证
-              } else if (res.data.code === 500) {
-                this.fromCheck1.phoneNumber = false;//验证
-                verifyCB(this.fromCheck1.phoneNumber);//回调
-              }
-            }).catch((error) => {
-              this.tips( "系统出错！","error");
-              console.log(error);
-            });
-            break;
+          /*    case "checkName":
+                this.$axios.get("/user/checkName", {
+                  params: {
+                    id: this.id,
+                    name: this.form_user.name,
+                  }
+                }).then((res) => {
+                  if (res.data.code === 0) {
+                    this.fromCheck1.name = true;//验证通过
+                    verifyCB(this.fromCheck1.name);//回调  验证
+                    this.form_user.hahah = "dd";
+                  } else if (res.data.code === 500) {
+                    this.fromCheck1.name = false;//验证不通过
+                    verifyCB(this.fromCheck1.name);//回调 弹出错误验证
+                  }
+                }).catch((error) => {
+                  this.tips( "系统出错！","error");
+                  console.log(error)
+                });
+                break;*/
+          /*   case "checkremarks":
+               let _this = this;
+               console.log(_this.form_user);
+               this.$axios.get("/user/checkremarks", {
+                 params: {
+                   id: this.id,
+                   remarks: this.form_user.remarks,
+                 }
+               }).then(function (res) {
+                 if (res.data.code === 200) {
+                   _this.fromCheck1.remarks = true;//验证通过
+                   verifyCB(_this.fromCheck1.remarks);//回调  验证
+                 } else if (res.data.code === 500) {
+                   _this.fromCheck1.remarks = false;//验证不通过
+                   verifyCB(_this.fromCheck1.remarks);//回调  验证
+                 }
+               }).catch((error) => {
+                 this.tips( "系统出错！","error");
+                 console.log(error)
+               });
+               break;*/
+
           case "search":
             if (this.search === "") {
               this.tips("搜索内容不能为空！","warning");
@@ -668,10 +653,10 @@
                 let _this = this;
                 this.tableData = list.map(function (item) {
 
-                  if (item.gender === 1) {
-                    item.gender = "在线"
-                  } else if (item.gender === 0) {
-                    item.gender = "离线"
+                  if (item.age === 1) {
+                    item.age = "在线"
+                  } else if (item.age === 0) {
+                    item.age = "离线"
                   }
                   return item;
                 });
@@ -687,6 +672,44 @@
             break;
         }
       },
+
+      onSubmit() {
+        this.$axios({//查询
+          method:'get',
+          url:'/device/list',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          },
+          params:{
+            pageNum:this.currentPage,
+            name: this.formInline.name,
+            gender: this.formInline.gender,
+            phoneNumber: this.formInline.phoneNumber
+          }
+        } ).then((res) => {
+          if (res.data.code === 0) {
+            let list = res.data.data.list;
+            this.page_total = res.data.data.pageSum;
+            this.tableData = list.map(function (item) {
+              if (item.age === 1) {
+                item.age = "在线"
+              } else if (item.age === 0) {
+                item.age = "离线"
+              } else {
+                item.loginTime = "暂无记录";
+              }
+              return item;
+            });
+          } else {
+            this.tips(res.data.message,"warning");
+          }
+          this.loading = false;
+        }).catch((error) => {
+          this.tips( "系统出错！","error");
+          console.log(error);
+          this.loading = false;
+        });
+      }
     }, created() {
       this.requestApi("getUser");
     }
