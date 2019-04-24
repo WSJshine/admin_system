@@ -22,13 +22,15 @@
 
         <el-col :span="8" :offset="12" :md="8" :lg="8" :xs="24" :sm="24">
 
-        <el-cascader
-          :options="valueBatch"
-          v-model="selectedOptions"
-          filterable
-          change-on-select
-        ></el-cascader>
-          <el-button type="primary" icon="el-icon-search" @click="requestApi('search')">搜索</el-button>
+          <el-cascader
+            :change-on-select="true"
+            :props="defaultParams"
+            :options="options"
+            v-model="selectedOptions"
+            @change="handelChange"
+          ></el-cascader>
+
+          <el-button type="primary" icon="el-icon-search" @click="selectBel(vals)">搜索</el-button>
 
         </el-col>
         <el-col :span="4" :md="4" :lg="4" :xs="24" :sm="24"
@@ -147,30 +149,35 @@
     <el-dialog :append-to-body="true" :title="this.dialogText" @close="closeUserDialog" :visible.sync="dialogFormNew">
       <el-form :model="form_user" ref="userForm" :rules="formRulers" size="small">
 
-
+        <el-form-item label="楼栋类型" :label-width="formLabelWidth" prop="buildingType">
+          <el-select v-model="form_user.buildingName" placeholder="请选择楼栋类型" filterable>
+            <el-option label="宿舍楼" value="1"></el-option>
+            <el-option label="教学楼" value="0"></el-option>
+          </el-select>
+        </el-form-item>
 
         <el-form-item label="楼栋名称" :label-width="formLabelWidth" prop="buildingName">
-          <el-select v-model="form_user.buildingName" placeholder="请选择楼栋名称">
+          <el-select v-model="form_user.buildingName" placeholder="请选择楼栋名称" filterable>
             <el-option label="女生宿舍1号楼" value="1"></el-option>
-            <el-option label="男生宿舍2号楼" value="0"></el-option>
+            <!--<el-option label="男生宿舍2号楼" value="0"></el-option>-->
           </el-select>
         </el-form-item>
 
         <el-form-item label="楼层" :label-width="formLabelWidth" prop="floorName">
-          <el-select v-model="form_user.floorName" placeholder="请选择楼层">
+          <el-select v-model="form_user.floorName" placeholder="请选择楼层" filterable>
             <el-option label="一楼" value="1"></el-option>
             <el-option label="二楼" value="0"></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="房间号" :label-width="formLabelWidth" prop="roomNumber">
-          <el-select v-model="form_user.roomNumber" placeholder="请选择房间号">
+          <el-select v-model="form_user.roomNumber" placeholder="请选择房间号" filterable>
             <el-option label="301" value="1"></el-option>
             <el-option label="403" value="0"></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item label="房间名" :label-width="formLabelWidth" prop="roomName">
+        <el-form-item label="房间名" :label-width="formLabelWidth" prop="roomName" >
           <el-row>
             <el-col :span="12">
               <el-input v-model="form_user.roomName" auto-complete="off" ></el-input>
@@ -227,6 +234,7 @@
       };
 
       return {
+        vals:[],
         loading: true,
         action: "",//当前行为
         currentPage: 1,//分页当前页
@@ -253,32 +261,20 @@
           roomCurrentHeadcount: "",
           roomSharingPolicy:"",
           remarks: "",
-
+          buildingType:""
         },//新增 和 编辑 的数据
         dialogText: "",
         search: "",//搜索框
         search_select: "deviceName",//搜索框左侧下拉数据
         tableData: [],//表单数据源
 
-        depShowType:{
-          value:'id',
-          label:'name',
-          children:'nodes'
+        options:[],
+        selectedOptions: [],
+        defaultParams: {
+          label: 'name',
+          value: 'name',
+          children: 'children'
         },
-        valueBatch:[],
-        selectedOptions:[]
-       /* options:[{
-          value:'宿舍一号楼111',
-          label:'宿舍一号楼111',
-          children:[{
-            value:'第222层',
-            label:'第222层',
-            children:[{
-              value:'第33333层',
-              label:'第33333层'
-            }]
-          }]
-        }]*/
 
       }
     },
@@ -327,7 +323,7 @@
             roomCurrentHeadcount: "",
             roomSharingPolicy:"",
             remarks: "",
-
+            buildingType:""
           }
         } else if (type === 'edit') {
           this.action = "edit";
@@ -408,6 +404,7 @@
                 roomName: this.form_user.roomName,//房间名
                 floorName: this.form_user.floorName,//楼层
                 buildingName: this.form_user.buildingName,//楼栋名称
+                buildingType:this.form_user.buildingType,//楼栋类型
                 remarks: this.form_user.remarks,//备注
                 roomCurrentHeadcount: this.form_user.roomCurrentHeadcount,//房间当前人数
                 roomSharingPolicy: this.form_user.roomSharingPolicy//总容纳人数
@@ -435,6 +432,7 @@
                 roomName: this.form_user.roomName,
                 floorName: this.form_user.floorName,
                 buildingName: this.form_user.buildingName,
+                buildingType:this.form_user.buildingType,
                 remarks: this.form_user.remarks,
                 roomCurrentHeadcount: this.form_user.roomCurrentHeadcount,
                 roomSharingPolicy: this.form_user.roomSharingPolicy
@@ -544,8 +542,9 @@
             break;
         }
       },
-      selectThree(){
-        this.loading = true;
+
+      // 从后台获取数据
+      getProductType(){
         this.$axios({//查看三级查询列表
           method:'get',
           url:'/schoolRoom/roomPositionList',
@@ -556,46 +555,88 @@
             pageNum:this.currentPage
           }
         } ).then((res) => {
+
+          console.log(res.data.data)
+          this.options=res.data.data;
+          console.log("2222222222222222222222222222");
+          console.log("2222222222222222222222222222");
+          console.log(this.options)
+          console.log("3443535436356346533546576543")
+        })
+      },
+      handelChange(value){
+       // this.vals = this.getId(value, this.options)
+        this.vals=value;
+        console.log(value);
+        console.log(this.vals);
+        console.log(this.vals[0])
+
+     //   console.log(this.vals)
+
+      },
+     /* getId(value, opt){
+        return value.map((item) =>{
+          for(let itm in opt){
+            if(itm.value === value){
+              opt = itm.children
+              return itm
+            }
+          }
+          return null
+        })
+}*/
+      selectBel(vals){
+        console.log("2222222222222222222222222222");
+        console.log("3443535436356346533546576543")
+        console.log(this.vals);
+        console.log(this.vals[0])
+
+
+        if (this.vals === "") {
+          this.tips("搜索内容不能为空！","warning");
+          return;
+        }
+        this.loading = true;
+        this.$axios.get("/schoolRoom/list", {
+          params: {
+            buildingType:this.vals[0],
+            buildingName:this.vals[1],
+            floorName:this.vals[2],
+            roomNumber:this.vals[3],
+            pageNum: this.currentPage,
+          },
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          }
+        }).then((res) => {
           if (res.data.code === 0) {
+            let list = res.data.data.list;
 
-          /*  let options = res.data.data;
-            console.log("232323232");
-              console.log(options);
-              console.log("4545454545")
-
-            return options;*/
-
-
-            let batchdata = res.data.data
-            console.log("232323232");
-            console.log(batchdata);
-            console.log("4545454545")
-            //valueBatch
-            let dataValueBatch = batchdata  => batchdata .map(({buildingType, children}) => (children ? {
-              // value    : id,
-              label    : buildingName,
-              children : dataValueBatch(children),
-            } : {
-              // value : id,
-              label : buildingType,
-            }));
-            this.valueBatch = dataValueBatch(batchdata);
-
-            this.tips("三级联查接口连接成功");
-          } else {
+            if (list.length === 0) {
+              this.tips("没有查询到数据","info");
+              this.options = [];
+              this.page_total = 0;
+              this.loading = false;
+              return;
+            }
+            this.page_total = res.data.pageSum;
+            let _this = this;
+          } else if (res.data.code === 500) {
             this.tips(res.data.message,"warning");
           }
           this.loading = false;
         }).catch((error) => {
-          this.tips( "系统出错！","error");
+          this.tips("系统出错！","error");
           console.log(error);
           this.loading = false;
         });
+
       }
 
-    }, created() {
+    },
+    created() {
       this.requestApi("getUser");
-      this.selectThree();
+      this.getProductType();
     }
   }
 </script>
