@@ -76,7 +76,9 @@
 </template>
 
 <script>
+
   export default {
+
     name: "releaseNews",
     data() {
       return {

@@ -19,29 +19,27 @@
       </el-row>
 
       <el-row class="panelArea ">
-
         <el-col :span="18" :offset="1" :md="16" :lg="16" :xs="3" :sm="24">
-
-        <el-form :inline="true" :model="formInline" class="demo-form-inline">
-          <el-form-item label="设备名称">
-            <el-input  placeholder="设备名称" v-model="formInline.deviceName" size="small"></el-input>
-          </el-form-item>
-          <el-form-item label="设备类型">
-            <el-select  placeholder="设备类型" v-model="formInline.deviceTypeString" size="small">
-              <el-option label="智能锁1" value="shanghai"></el-option>
-              <el-option label="智能锁2" value="beijing"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="设备状态">
-            <el-select  placeholder="设备状态" v-model="formInline.deviceStatus" size="small">
-              <el-option label="在线" value="1"></el-option>
-              <el-option label="离线" value="0"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onSubmit"> 查询</el-button>
-          </el-form-item>
-        </el-form>
+          <el-form :inline="true" :model="formInline" class="demo-form-inline">
+            <el-form-item label="设备名称">
+              <el-input  placeholder="设备名称" v-model="formInline.deviceName" size="small"></el-input>
+            </el-form-item>
+            <el-form-item label="设备类型">
+              <el-select  placeholder="设备类型" v-model="formInline.deviceTypeString" size="small">
+                <el-option label="智能锁1" value="shanghai"></el-option>
+                <el-option label="智能锁2" value="beijing"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="设备状态">
+              <el-select  placeholder="设备状态" v-model="formInline.deviceStatus" size="small">
+                <el-option label="在线" value="1"></el-option>
+                <el-option label="离线" value="0"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="onSubmit"> 查询</el-button>
+            </el-form-item>
+          </el-form>
         </el-col>
 
         <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
@@ -49,7 +47,11 @@
           <el-tooltip content="新增" placement="top">
             <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
           </el-tooltip>
+          <el-tooltip content="批量删除" placement="top" >
 
+            <el-button type="primary" @click="batchDelete(tableChecked)" icon="el-icon-delete" size="small" plain></el-button>
+
+          </el-tooltip>
         </el-col>
 
 
@@ -59,8 +61,15 @@
         <el-col :span="24">
           <el-table
             :data="tableData"
+            @selection-change="handleSelectionChange"
             border
             style="width: 100%">
+
+            <el-table-column
+              type="selection"
+              label="全选"
+              width="55">
+            </el-table-column>
 
             <el-table-column
               width="50"
@@ -240,28 +249,6 @@
   export default {
     name: "repairOrder",
     data() {
-
-    /*  let checkdeviceName = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error('设备名称不能为空'));
-        }
-        if (value.length < 3 || value.length > 15) {
-          return callback(new Error('设备名称长度要求3-15字符'));
-        }else{
-          callback();
-        }
-      };*/
-/*      let checkposition = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error('设备位置不能为空'));
-        }
-        if (value.length < 3 || value.length > 15) {
-          return callback(new Error('设备位置长度要求3-15字符'));
-        }else {
-          callback(); //这个会变绿
-        }
-      };*/
-
       let checkremarks = (rule, value, callback) => {
         if (value.length >= 35) {
           return callback(new Error("备注内容过长"));
@@ -277,7 +264,7 @@
         if (value.length !== 15 || isNaN(value)) {
           return callback(new Error('IMEI值格式不正确'));
         }
-         else {
+        else {
           callback(); //这个会变绿
         }
       };
@@ -292,12 +279,6 @@
         dialogFormNew: false,// 添加 或 编辑 的 模态框  是否显示
         formLabelWidth: "80px",//模态框右侧的label间距
         formRulers: {
-         /* deviceName: [
-            {validator: checkdeviceName, trigger: 'blur'},
-          ],*/
-         /* position: [
-            {validator: checkposition, trigger: 'blur'}
-          ],*/
           remarks: [
             {validator: checkremarks, trigger: 'blur'}
           ],
@@ -305,11 +286,6 @@
             {validator: checkPassword, trigger: 'blur'}
           ]
         },
-     /*   fromCheck1: {
-          deviceName: false,
-          position: false,
-          remarks: false,
-        },*/
         form_user: {
           deviceName: "",
           signalLevel: "",
@@ -322,12 +298,12 @@
         },//新增 和 编辑 的数据
 
         dialogText: "",
-
         search: "",//搜索框
         search_select: "deviceName",//搜索框左侧下拉数据
-
         tableData: [],//表单数据源
 
+        tableChecked:[],//被选中的记录数据。。。对应“批量删除”传的参数值
+        idsarr:[],//批量删除id
 
 //查询
         formInline: {
@@ -491,16 +467,16 @@
             break;
           case "edit":
             this.$axios.put("/device", {
-              id: this.id,
-              deviceName: this.form_user.deviceName,
-              imei: this.form_user.imei,
-              deviceTypeString: this.form_user.deviceTypeString,
-              signalLevel: this.form_user.signalLevel,
-              batteryLevel: this.form_user.batteryLevel,
-              position: this.form_user.position,
-              remarks: this.form_user.remarks,
-              deviceStatus: this.form_user.deviceStatus,
-            },
+                id: this.id,
+                deviceName: this.form_user.deviceName,
+                imei: this.form_user.imei,
+                deviceTypeString: this.form_user.deviceTypeString,
+                signalLevel: this.form_user.signalLevel,
+                batteryLevel: this.form_user.batteryLevel,
+                position: this.form_user.position,
+                remarks: this.form_user.remarks,
+                deviceStatus: this.form_user.deviceStatus,
+              },
               {
                 headers:{
                   'Authorization':'Bearer ' +sessionStorage.getItem("token")
@@ -511,13 +487,13 @@
                 this.requestApi("getUser")
               } else {
                 this.tips(res.data.message,"warning");
-               // this.tips("更新失败！");
+                // this.tips("更新失败！");
               }
             }).catch((error) => {
             });
             break;
           case "delete":
-            this.$axios.delete("/device", {//删除学校设备
+            this.$axios.delete("/device", {//单个删除学校设备
               params: {
                 ids: this.id
               },
@@ -541,17 +517,16 @@
               return;
             }
             this.loading = true;
-            // this.$axios.get("/user/getAll?pageNum=" + this.currentPage + "&pageSize=" + this.page_size).then((res) => {
-           this.$axios({//查看学校设备列表
-             method:'get',
-             url:'/device/list',
-             headers:{
-               'Authorization':'Bearer ' +sessionStorage.getItem("token")
-             },
-             params:{
-               pageNum:this.currentPage
-             }
-           } ).then((res) => {
+            this.$axios({//查看学校设备列表
+              method:'get',
+              url:'/device/list',
+              headers:{
+                'Authorization':'Bearer ' +sessionStorage.getItem("token")
+              },
+              params:{
+                pageNum:this.currentPage
+              }
+            } ).then((res) => {
               if (res.data.code === 0) {
                 let list = res.data.data.list;
                 this.page_total = res.data.data.pageSum;
@@ -570,71 +545,11 @@
               }
               this.loading = false;
             }).catch((error) => {
-                this.tips( "系统出错！","error");
-                console.log(error);
-                this.loading = false;
-              });
-            break;
-      /*    case "checkName":
-            this.$axios.get("/user/checkName", {
-              params: {
-                id: this.id,
-                deviceName: this.form_user.deviceName,
-              }
-            }).then((res) => {
-              if (res.data.code === 0) {
-                this.fromCheck1.deviceName = true;//验证通过
-                verifyCB(this.fromCheck1.deviceName);//回调  验证
-                this.form_user.hahah = "dd";
-              } else if (res.data.code === 500) {
-                this.fromCheck1.deviceName = false;//验证不通过
-                verifyCB(this.fromCheck1.deviceName);//回调 弹出错误验证
-              }
-            }).catch((error) => {
-              this.tips( "系统出错！","error");
-              console.log(error)
-            });
-            break;*/
-       /*   case "checkremarks":
-            let _this = this;
-            console.log(_this.form_user);
-            this.$axios.get("/user/checkremarks", {
-              params: {
-                id: this.id,
-                remarks: this.form_user.remarks,
-              }
-            }).then(function (res) {
-              if (res.data.code === 200) {
-                _this.fromCheck1.remarks = true;//验证通过
-                verifyCB(_this.fromCheck1.remarks);//回调  验证
-              } else if (res.data.code === 500) {
-                _this.fromCheck1.remarks = false;//验证不通过
-                verifyCB(_this.fromCheck1.remarks);//回调  验证
-              }
-            }).catch((error) => {
-              this.tips( "系统出错！","error");
-              console.log(error)
-            });
-            break;*/
-      /*    case "checkposition":
-            this.$axios.get("/user/checkposition", {
-              params: {
-                id: this.id,
-                position: this.form_user.position,
-              }
-            }).then((res) => {
-              if (res.data.code === 200) {
-                this.fromCheck1.position = true;//验证通过
-                verifyCB(this.fromCheck1.position);//回调  验证
-              } else if (res.data.code === 500) {
-                this.fromCheck1.position = false;//验证
-                verifyCB(this.fromCheck1.position);//回调
-              }
-            }).catch((error) => {
               this.tips( "系统出错！","error");
               console.log(error);
+              this.loading = false;
             });
-            break;*/
+            break;
           case "search":
             if (this.search === "") {
               this.tips("搜索内容不能为空！","warning");
@@ -646,7 +561,7 @@
                 query: this.search,
                 type: this.search_select,
                 pageNum: this.currentPage,
-              //  pageSize: this.page_size,
+                //  pageSize: this.page_size,
               },
               headers:{
                 'Authorization':'Bearer ' +sessionStorage.getItem("token")
@@ -685,7 +600,6 @@
             break;
         }
       },
-
       onSubmit() {
         this.$axios({//查询
           method:'get',
@@ -722,7 +636,60 @@
           console.log(error);
           this.loading = false;
         });
-      }
+      },
+      handleSelectionChange(val){
+        console.log("handleSelectionChange--",val)
+        this.tableChecked = val
+      },
+      //批量删除
+      batchDelete(rows){
+        console.log(rows);
+        var _this = this;
+        var idsarr = [];
+        _this.$confirm('是否确认此操作?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          rows.forEach(element =>{
+            console.log(element);
+            idsarr.push(element.id)
+
+        /*  console.log("1111111111");
+          console.log(idsarr);
+          console.log("222222222222");
+          for(var i=0;i<idsarr.length;i++) {
+            var j = idsarr[i].count;*/
+
+            /*       var dataarrw = [];
+          for(var j=0;j<idsarr.length;j++){
+            dataarrw.push(idsarr[j].count);
+          }*/
+            this.$axios.delete("/device", {//删除学校设备
+              params: {
+                ids: element.id
+              },
+              headers: {
+                'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+              }
+            }).then((res) => {
+              if (res.data.code === 0) {
+                this.tips("删除成功！", "success");
+                this.requestApi("getUser")
+              } else {
+                this.tips(res.data.message, "warning");
+                this.tips("删除no成功！");
+              }
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          });
+        });
+      },
+
     }, created() {
       this.requestApi("getUser");
     }

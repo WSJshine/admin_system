@@ -49,8 +49,8 @@
             <!--<el-tooltip content="新增" placement="top">
               <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
             </el-tooltip>-->
-            <el-tooltip content="导出报表" placement="top">
-              <el-button type="primary"  icon="el-icon-download" size="small" plain></el-button>
+            <el-tooltip content="导出报表" placement="top" >
+              <el-button type="primary" @click="onSubmit"  icon="el-icon-download" size="small" plain ></el-button>
             </el-tooltip>
           </el-col>
 
@@ -242,6 +242,9 @@
 </template>
 
 <script>
+/*  import FileSaver from 'file-saver'
+  import XLSX from 'xlsx'*/
+
   export default {
     name: "newsManagement",
     data() {
@@ -434,6 +437,59 @@
 
       onSubmit() {
         this.$axios({//查询
+          method:'get',
+          url:'/deviceLock/log/list',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          },
+          params:{
+            pageNum:this.currentPage,
+            pageSize:10,
+            deviceName: this.formInline.deviceName,
+            position: this.formInline.position,
+            deviceStatus: this.formInline.deviceStatus
+          }
+        } ).then((res) => {
+          if (res.data.code === 0) {
+            let list = res.data.data.list;
+            this.page_total = res.data.data.pageSum;
+            this.tableData = list.map(function (item) {
+              if (item.deviceStatus === 1) {
+                item.deviceStatus = "在线"
+              } else if (item.deviceStatus === 0) {
+                item.deviceStatus = "离线"
+              } else {
+                item.loginTime = "暂无记录";
+              }
+              return item;
+            });
+          } else {
+            this.tips(res.data.message,"warning");
+          }
+          this.loading = false;
+        }).catch((error) => {
+          this.tips( "系统出错！","error");
+          console.log(error);
+          this.loading = false;
+        });
+      },
+  /*    exportExcel () {
+        /!* generate workbook object from table *!/
+        debugger;
+        let wb = XLSX.utils.table_to_book(document.querySelector('#tableData'));
+        /!* get binary string as output *!/
+        let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' });
+        try {
+          FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '用户提交返利表.xlsx');
+        } catch (e)
+        {
+          if (typeof console !== 'undefined')
+            console.log(e, wbout)
+        }
+        return wbout
+      }*/
+      exportExcel(){
+        this.$axios({//导出报表
           method:'get',
           url:'/device/list',
           headers:{

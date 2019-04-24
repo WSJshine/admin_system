@@ -14,12 +14,14 @@
     "echarts": "^4.1.0",
     "element-ui": "^2.4.6",
     "es6-promise": "^4.2.5",
+    "file-saver": "^2.0.1",
     "font-awesome": "^4.7.0",
     "js-base64": "^2.5.0",
     "mavon-editor": "^2.6.17",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "xlsx": "^0.14.2"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
