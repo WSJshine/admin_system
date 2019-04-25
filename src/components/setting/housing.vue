@@ -30,7 +30,7 @@
             @change="handelChange"
           ></el-cascader>
 
-          <el-button type="primary" icon="el-icon-search" @click="selectBel(vals)">搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="onSubmit">搜索</el-button>
 
         </el-col>
         <el-col :span="4" :md="4" :lg="4" :xs="24" :sm="24"
@@ -149,19 +149,32 @@
     <el-dialog :append-to-body="true" :title="this.dialogText" @close="closeUserDialog" :visible.sync="dialogFormNew">
       <el-form :model="form_user" ref="userForm" :rules="formRulers" size="small">
 
+
         <el-form-item label="楼栋类型" :label-width="formLabelWidth" prop="buildingType">
-          <el-select v-model="form_user.buildingName" placeholder="请选择楼栋类型" filterable>
-            <el-option label="宿舍楼" value="1"></el-option>
-            <el-option label="教学楼" value="0"></el-option>
+          <el-select v-model="form_user.buildingType" placeholder="请选择楼栋类型" filterable>
+            <el-option
+              v-for="name in options"
+              :key="name.name"
+              :label="name.name"
+              :value="name.name">
+            </el-option>
           </el-select>
+
         </el-form-item>
 
         <el-form-item label="楼栋名称" :label-width="formLabelWidth" prop="buildingName">
           <el-select v-model="form_user.buildingName" placeholder="请选择楼栋名称" filterable>
+           <!-- <el-option
+              v-for="name in options"
+              :label="name.children[0].name"
+              :value="name.children[0].name">
+            </el-option>-->
+<!--            v-if="options.children.length > 0"-->
             <el-option label="女生宿舍1号楼" value="1"></el-option>
             <!--<el-option label="男生宿舍2号楼" value="0"></el-option>-->
           </el-select>
         </el-form-item>
+
 
         <el-form-item label="楼层" :label-width="formLabelWidth" prop="floorName">
           <el-select v-model="form_user.floorName" placeholder="请选择楼层" filterable>
@@ -267,6 +280,7 @@
         search: "",//搜索框
         search_select: "deviceName",//搜索框左侧下拉数据
         tableData: [],//表单数据源
+
 
         options:[],
         selectedOptions: [],
@@ -504,42 +518,7 @@
             });
             break;
 
-          case "search":
-            if (this.search === "") {
-              this.tips("搜索内容不能为空！","warning");
-              return;
-            }
-            this.loading = true;
-            this.$axios.get("/schoolRoom/roomPositionList", {
-              params: {
-                pageNum: this.currentPage,
-              },
-              headers:{
-                'Authorization':'Bearer ' +sessionStorage.getItem("token")
-              }
-            }).then((res) => {
-              if (res.data.code === 0) {
-                let list = res.data.data.list;
 
-                if (list.length === 0) {
-                  this.tips("没有查询到数据","info");
-                  this.options = [];
-                  this.page_total = 0;
-                  this.loading = false;
-                  return;
-                }
-                this.page_total = res.data.pageSum;
-                let _this = this;
-              } else if (res.data.code === 500) {
-                this.tips(res.data.message,"warning");
-              }
-              this.loading = false;
-            }).catch((error) => {
-              this.tips("系统出错！","error");
-              console.log(error);
-              this.loading = false;
-            });
-            break;
         }
       },
 
@@ -565,72 +544,54 @@
         })
       },
       handelChange(value){
-       // this.vals = this.getId(value, this.options)
+
         this.vals=value;
         console.log(value);
         console.log(this.vals);
         console.log(this.vals[0])
-
-     //   console.log(this.vals)
-
       },
-     /* getId(value, opt){
-        return value.map((item) =>{
-          for(let itm in opt){
-            if(itm.value === value){
-              opt = itm.children
-              return itm
-            }
-          }
-          return null
-        })
-}*/
-      selectBel(vals){
+
+      onSubmit() {
         console.log("2222222222222222222222222222");
         console.log("3443535436356346533546576543")
         console.log(this.vals);
         console.log(this.vals[0])
-
-
-        if (this.vals === "") {
-          this.tips("搜索内容不能为空！","warning");
-          return;
-        }
-        this.loading = true;
-        this.$axios.get("/schoolRoom/list", {
-          params: {
+        this.$axios({//查询
+          method:'get',
+          url:'/schoolRoom/list',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          },
+          params:{
             buildingType:this.vals[0],
             buildingName:this.vals[1],
             floorName:this.vals[2],
             roomNumber:this.vals[3],
             pageNum: this.currentPage,
-          },
-          headers:{
-            'Authorization':'Bearer ' +sessionStorage.getItem("token")
           }
-        }).then((res) => {
+        } ).then((res) => {
           if (res.data.code === 0) {
             let list = res.data.data.list;
-
-            if (list.length === 0) {
-              this.tips("没有查询到数据","info");
-              this.options = [];
-              this.page_total = 0;
-              this.loading = false;
-              return;
-            }
-            this.page_total = res.data.pageSum;
-            let _this = this;
-          } else if (res.data.code === 500) {
+            this.page_total = res.data.data.pageSum;
+            this.tableData = list.map(function (item) {
+              if (item.deviceStatus === 1) {
+                item.deviceStatus = "在线"
+              } else if (item.deviceStatus === 0) {
+                item.deviceStatus = "离线"
+              } else {
+                item.loginTime = "暂无记录";
+              }
+              return item;
+            });
+          } else {
             this.tips(res.data.message,"warning");
           }
           this.loading = false;
         }).catch((error) => {
-          this.tips("系统出错！","error");
+          this.tips( "系统出错！","error");
           console.log(error);
           this.loading = false;
         });
-
       }
 
     },
@@ -651,5 +612,26 @@
     background-color: #fff;
   }
 
+  .leftdiv{
+    float:left;
+    width:400px;
+    background-color:#CC6633;
+  }
+
+  .rightdiv{
+    float:right;
+    width:400px;
+    background-color:#CC66FF;
+
+  }
+
+  .centerdiv{
+    float:left;
+    width:50px;
+    border-right: 1px dashed black;
+    padding-bottom:1600px;  /*关键*/
+    margin-bottom:-1600px;  /*关键*/
+
+  }
 
 </style>

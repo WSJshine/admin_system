@@ -387,7 +387,7 @@
             }
             this.loading = true;
 
-            this.$axios({//查看学校设备列表
+            this.$axios({//查看设备列表
               method:'get',
               url:'/devicePassword/list',
               headers:{

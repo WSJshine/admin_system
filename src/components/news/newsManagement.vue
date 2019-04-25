@@ -488,7 +488,7 @@
         }
         return wbout
       }*/
-      exportExcel(){
+     /* exportExcel(){
         this.$axios({//导出报表
           method:'get',
           url:'/device/list',
@@ -524,7 +524,7 @@
           console.log(error);
           this.loading = false;
         });
-      }
+      }*/
     }, created() {
       this.requestApi("getUser");
     }

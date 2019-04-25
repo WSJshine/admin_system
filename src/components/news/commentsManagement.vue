@@ -156,7 +156,21 @@
 
 
     <el-dialog :append-to-body="true" :title="this.dialogText" @close="closeUserDialog" :visible.sync="dialogFormNew">
-      <el-form :model="form_user" ref="userForm" :rules="formRulers" size="small">
+      <el-form :model="form_user" ref="userForm" :rules="formRulers" size="small" enctype="multipart/form-data">
+
+        <el-form-item label="头像" :label-width="formLabelWidth" prop="avatarUrl">
+          <el-upload
+            class="avatar-uploader"
+            action="https://school.tcsmart.com.cn/api/web/school/file"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload">
+            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+
+        </el-form-item>
+
         <el-form-item label="姓名" :label-width="formLabelWidth" prop="name">
           <el-row>
             <el-col :span="12">
@@ -183,9 +197,16 @@
 
         <el-form-item label="宿舍号" :label-width="formLabelWidth" prop="schoolAddress">
           <el-row>
-            <el-col :span="12">
+            <!--<el-col :span="12">
               <el-input v-model="form_user.schoolAddress" auto-complete="off"  ></el-input>
-            </el-col>
+            </el-col>-->
+            <el-cascader
+              :change-on-select="true"
+              :props="defaultParams"
+              :options="options"
+              v-model="selectedOptions"
+              @change="handelChange"
+            ></el-cascader>
           </el-row>
         </el-form-item>
 
@@ -243,6 +264,9 @@
       };
 
       return {
+        imageUrl: '',
+        avatarUrl:'',//头像地址
+
         loading: true,
         action: "",//当前行为
         currentPage: 1,//分页当前页
@@ -267,6 +291,7 @@
           position: "",
           remarks: "",
           imei: "",
+          file:""
         },//新增 和 编辑 的数据
 
         dialogText: "",
@@ -282,7 +307,17 @@
           name: '',
           gender: '',
           phoneNumber:''
-        }
+        },
+
+//新增编辑三级下拉选
+        options:[],
+        selectedOptions: [],
+        defaultParams: {
+          label: 'name',
+          value: 'name',
+          children: 'children'
+        },
+
       }
     },
     methods: {
@@ -329,7 +364,8 @@
            schoolAddress: "",
             age: "",
             position: "",
-            remarks: ""
+            remarks: "",
+            file:""
           }
         } else if (type === 'edit') {
           this.action = "edit";
@@ -368,7 +404,7 @@
           } else {
             console.log("删除学生11111");
             console.log("删除学生", this.id);
-            console.log("删除设备222222222");
+            console.log("删除学生222222222");
             this.requestApi("delete");
             this.dialogVisible = false;
           }
@@ -377,7 +413,7 @@
             this.dialogFormNew = false;
             this.action = "";
           } else {
-            console.log("新增设备");
+            console.log("新增学生");
             //首先打印一下this.$refs[formName]，检查是否拿到了正确的需要验证的form。其次在拿到了正确的form后，检查该form上添加的表单验证是否正确
             this.$refs["userForm"].validate((valid) => {
               console.log("1111");
@@ -408,10 +444,12 @@
 
         switch (action) {
           case "add":
+            let that = this;
             this.$axios({
               method:'post',
-              url:'/schoolBasicPersonnelInfo',
+              url:'/file',
               data: {
+                avatarUrl:that.imgId.fileUrlPath,
                 name: this.form_user.name,//姓名
                 gender: this.form_user.gender,//性别
                 phoneNumber: this.form_user.phoneNumber,//联系电话
@@ -438,6 +476,7 @@
             break;
           case "edit":
             this.$axios.put("/schoolBasicPersonnelInfo", {
+                avatarUrl:that.imgId.fileUrlPath,
                 id: this.id,
                 name: this.form_user.name,//姓名
                 gender: this.form_user.gender,//性别
@@ -575,7 +614,7 @@
       onSubmit() {
         this.$axios({//查询
           method:'get',
-          url:'/device/list',
+          url:'/schoolBasicPersonnelInfo/list',
           headers:{
             'Authorization':'Bearer ' +sessionStorage.getItem("token")
           },
@@ -590,12 +629,12 @@
             let list = res.data.data.list;
             this.page_total = res.data.data.pageSum;
             this.tableData = list.map(function (item) {
-              if (item.age === 1) {
-                item.age = "在线"
-              } else if (item.age === 0) {
-                item.age = "离线"
+              if (item.gender === 1) {
+                item.gender = "男"
+              } else if (item.gender === 2) {
+                item.gender = "女"
               } else {
-                item.loginTime = "暂无记录";
+                item.gender = "未知";
               }
               return item;
             });
@@ -608,9 +647,91 @@
           console.log(error);
           this.loading = false;
         });
-      }
+      },
+//头像上传
+      handleAvatarSuccess(res, file) {
+        this.imageUrl = URL.createObjectURL(file.raw);
+      },
+      beforeAvatarUpload(file) { //上传前的函数
+        //上传前对图片类型和大小进行判断
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 <10;
+
+        if (!isJPG) {
+          this.$message.error('上传头像图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 10MB!');
+        }
+        //校验成功上传文件
+        if(isJPG && isLt2M == true){
+          console.log(file);
+          console.log("file");
+          //将文件转化为formdata数据上传
+          let fd = new FormData()
+          fd.append('file', file)
+          console.log("fd")
+          console.log(fd)
+          // post上传图片
+
+          let that = this
+
+          new Promise(function (resolve, reject) {
+            that.$axios.post('/file', fd,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                  'Authorization':'Bearer ' +sessionStorage.getItem("token")
+                }
+              }).then((response) => {
+              that.imgId = response.data.data
+              console.log("imgId")
+              console.log(that.imgId)
+              resolve(that.imgId);
+
+            }).catch((error) =>{
+              this.tips('头像上传失败，请重新上传!',"error");
+            })
+          })
+
+        }
+        return isJPG && isLt2M;
+
+      },
+
+// 从后台获取数据
+      getProductType(){
+        this.$axios({//查看三级查询列表
+          method:'get',
+          url:'/schoolRoom/roomPositionList',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          },
+          params:{
+            pageNum:this.currentPage
+          }
+        } ).then((res) => {
+
+          console.log(res.data.data)
+          this.options=res.data.data;
+          console.log("2222222222222222222222222222");
+          console.log("2222222222222222222222222222");
+          console.log(this.options)
+          console.log("3443535436356346533546576543")
+        })
+      },
+      handelChange(value){
+
+        this.vals=value;
+        console.log(value);
+        console.log(this.vals);
+        console.log(this.vals[0])
+
+      },
+
     }, created() {
       this.requestApi("getUser");
+      this.getProductType();
     }
   }
 </script>
@@ -626,4 +747,32 @@
   }
 
 
+  .avatar-uploader .el-upload {
+    border: 1px dashed  #409EFF;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+    border: 1px dashed #8c939d;
+    border-radius: 6px;
+  }
+
+
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>
