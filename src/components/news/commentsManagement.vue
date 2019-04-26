@@ -69,8 +69,11 @@
             </el-table-column>
 
             <el-table-column
-              prop="touxiang"
+              prop="avatarUrl"
               label="头像">
+              <template>
+                <img :src="avatarUrl" width="240" height="40" class="head_pic"/>
+              </template>
             </el-table-column>
 
             <el-table-column
@@ -253,7 +256,14 @@
   export default {
     name: "commentsManagement",
     data() {
-
+      /*let checkid = (rule, value, callback) =>{
+        let k= this.vals.length-1;
+        if(this.vals[k] === 0){
+          return callback(new Error("未选中学生宿舍房间号"));
+        }else {
+          callback(); //这个会变绿
+        }
+      };*/
 
       let checkremarks = (rule, value, callback) => {
         if (value.length >= 35) {
@@ -264,6 +274,7 @@
       };
 
       return {
+        iurl:'',
         imageUrl: '',
         avatarUrl:'',//头像地址
 
@@ -277,7 +288,9 @@
         dialogFormNew: false,// 添加 或 编辑 的 模态框  是否显示
         formLabelWidth: "80px",//模态框右侧的label间距
         formRulers: {
-
+         /* schoolAddress:[
+            {validator: checkid, trigger: 'blur'}
+          ],*/
           remarks: [
             {validator: checkremarks, trigger: 'blur'}
           ]
@@ -314,7 +327,7 @@
         selectedOptions: [],
         defaultParams: {
           label: 'name',
-          value: 'name',
+          value: 'id',
           children: 'children'
         },
 
@@ -444,35 +457,41 @@
 
         switch (action) {
           case "add":
-            let that = this;
-            this.$axios({
-              method:'post',
-              url:'/file',
-              data: {
-                avatarUrl:that.imgId.fileUrlPath,
-                name: this.form_user.name,//姓名
-                gender: this.form_user.gender,//性别
-                phoneNumber: this.form_user.phoneNumber,//联系电话
-                schoolAddress: this.form_user.schoolAddress,
-                position: this.form_user.position,//职位
-                remarks: this.form_user.remarks,//备注
-                age: this.form_user.age,//年龄
-              },
-              headers:{
-                'Authorization':'Bearer ' +sessionStorage.getItem("token")
-              }
-            }).then((res) => {
-              if (res.data.code === 0) {
-                this.tips( res.data.message,"success")
-                this.requestApi("getUser");
-              } else {
-                this.tips( res.data.message,"warning")
-              }
-            }).catch(
-              (error) => {
-                console.log(error);
-              }
-            );
+            let k = this.vals.length - 1;
+            if(this.vals[k] === 0){
+              this.tips('没选中学生房间号',"error");
+            }else{
+              let that = this;
+              this.$axios({
+                method:'post',
+                url:'/schoolBasicPersonnelInfo',
+                data: {
+                  avatarUrl:that.imgId.fileUrlPath,
+                  name: this.form_user.name,//姓名
+                  gender: this.form_user.gender,//性别
+                  phoneNumber: this.form_user.phoneNumber,//联系电话
+                  schoolAddress: this.form_user.schoolAddress,
+                  position: this.form_user.position,//职位
+                  remarks: this.form_user.remarks,//备注
+                  age: this.form_user.age,//年龄
+                },
+                headers:{
+                  'Authorization':'Bearer ' +sessionStorage.getItem("token")
+                }
+              }).then((res) => {
+                if (res.data.code === 0) {
+                  this.tips( res.data.message,"success")
+                  this.requestApi("getUser");
+                } else {
+                  this.tips( res.data.message,"warning")
+                }
+              }).catch(
+                (error) => {
+                  console.log(error);
+                }
+              );
+            }
+
             break;
           case "edit":
             this.$axios.put("/schoolBasicPersonnelInfo", {
@@ -546,7 +565,6 @@
                   } else {
                     item.gender = "未知";
                   }
-
                   return item;
                 });
               } else {
@@ -560,54 +578,6 @@
             });
             break;
 
-          case "search":
-            if (this.search === "") {
-              this.tips("搜索内容不能为空！","warning");
-              return;
-            }
-            this.loading = true;
-            this.$axios.get("/device", {
-              params: {
-                query: this.search,
-                type: this.search_select,
-                pageNum: this.currentPage,
-                //  pageSize: this.page_size,
-              },
-              headers:{
-                'Authorization':'Bearer ' +sessionStorage.getItem("token")
-              }
-            }).then((res) => {
-              if (res.data.code === 200) {
-                let list = res.data.map.pageInfo.list;
-
-                if (list.length === 0) {
-                  this.tips("没有查询到数据","info");
-                  this.tableData = [];
-                  this.page_total = 0;
-                  this.loading = false;
-                  return;
-                }
-                this.page_total = res.data.pageSum;
-                let _this = this;
-                this.tableData = list.map(function (item) {
-
-                  if (item.age === 1) {
-                    item.age = "在线"
-                  } else if (item.age === 0) {
-                    item.age = "离线"
-                  }
-                  return item;
-                });
-              } else if (res.data.code === 500) {
-                this.tips(res.data.message,"warning");
-              }
-              this.loading = false;
-            }).catch((error) => {
-              this.tips("系统出错！","error");
-              console.log(error);
-              this.loading = false;
-            });
-            break;
         }
       },
 
@@ -654,17 +624,20 @@
       },
       beforeAvatarUpload(file) { //上传前的函数
         //上传前对图片类型和大小进行判断
-        const isJPG = file.type === 'image/jpeg';
-        const isLt2M = file.size / 1024 / 1024 <10;
+        const isJPG = file.type === 'image/jpeg'||file.type === 'image/png';
+        /*const isGIF = file.type === 'image/gif';
+        const isPNG = file.type === 'image/png';
+        const isBMP = file.type === 'image/bmp';*/
+        const isLt10M = file.size / 1024 / 1024 <10;
 
         if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
+          this.$message.error('上传头像图片只能是 JPG或png 格式!');
         }
-        if (!isLt2M) {
+        if (!isLt10M) {
           this.$message.error('上传头像图片大小不能超过 10MB!');
         }
         //校验成功上传文件
-        if(isJPG && isLt2M == true){
+        if(isJPG && isLt10M == true){
           console.log(file);
           console.log("file");
           //将文件转化为formdata数据上传
@@ -695,7 +668,7 @@
           })
 
         }
-        return isJPG && isLt2M;
+        return isJPG && isLt10M;
 
       },
 
@@ -725,7 +698,7 @@
         this.vals=value;
         console.log(value);
         console.log(this.vals);
-        console.log(this.vals[0])
+        console.log(this.vals[3])
 
       },
 
