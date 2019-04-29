@@ -1,342 +1,569 @@
 <template>
-  <div class="c-main wow fadeIn"  style="">
-    <el-row class="topArea wow fadeInDown" data-wow-delay="0.5s">
+  <div class="c-main wow fadeIn">
+
+  <!--  <el-row class="topArea wow fadeInDown" data-wow-delay="0.5s">
       <el-col :span="24">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item>新闻资讯</el-breadcrumb-item>
-          <el-breadcrumb-item>发布新闻</el-breadcrumb-item>
+          <el-breadcrumb-item>报表中心</el-breadcrumb-item>
+          <el-breadcrumb-item>开门记录</el-breadcrumb-item>
         </el-breadcrumb>
       </el-col>
-    </el-row>
+    </el-row>-->
+
     <div class="mainBody">
 
-    <el-row class="headArea wow fadeInDown panelArea" data-wow-delay="0.3s">
-      <el-col :span="24">
-        <span class="title">发布新闻</span>
-        <span class="description">发布校园新闻资讯</span>
-      </el-col>
-    </el-row>
-
+      <el-row class="headArea wow fadeInDown panelArea" data-wow-delay="0.3s">
+        <el-col :span="24">
+          <span class="title">消息管理</span>
+        </el-col>
+      </el-row>
 
       <el-row class="panelArea ">
-        <el-form :model="form" label-width="80px" ref="form">
-          <el-form-item label="标题">
-            <el-input v-model="form.title"></el-input>
-          </el-form-item>
-          <el-form-item style="position: relative">
-            <el-upload
-              :action="uploadUrl"
-              :limit="1"
-              :headers="setHeader"
-              :multiple="false"
-              :on-error="uploadError"
-              :on-remove="handleRemove"
-              :on-success="uploadSuccess"
-              list-type="picture-card">
-              <i class="el-icon-plus"></i>
-            </el-upload>
 
-          </el-form-item>
-          <el-form-item label="分类">
-            <el-select placeholder="请选择分类" v-model="form.type">
-              <el-option :key="nt.id" :label="nt.typeName" :value="nt.id" v-for="nt in newsType"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="摘要">
-            <el-input type="textarea" v-model="form.digest"></el-input>
-          </el-form-item>
-          <el-form-item label="内容">
-            <mavon-editor @change="getHtmlContent"  @imgAdd="$imgAdd" @imgDel="$imgDel" ref=md style="height: 400px" v-model="form.content"></mavon-editor>
-            <!--<el-input type="textarea" v-model="form.content"></el-input>-->
-          </el-form-item>
+        <el-col :span="18" :offset="1" :md="16" :lg="16" :xs="3" :sm="24">
+          <el-form :inline="true" :model="formInline" class="demo-form-inline">
+            <el-form-item label="设备位置">
+              <!--<el-input  placeholder="设备名称" v-model="formInline.deviceName" size="small"></el-input>-->
+              <el-cascader
+                :change-on-select="true"
+                :props="formInline.defaultParams"
+                :options="formInline.options"
+                v-model="formInline.selectedOptions"
+                @change="handelChange"
+                size="small"
+              ></el-cascader>
+            </el-form-item>
+            <el-form-item label="报警时间">
+              <el-date-picker
+                type="datetimerange"
+                v-model="formInline.value2"
+                size="small"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="chooseTimeRange">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="el-icon-search" @click="onSubmit" size="small">搜索</el-button>
+            </el-form-item>
+          </el-form>
+        </el-col>
 
-          <el-form-item label="选项">
-            <el-checkbox-group v-model="form.option">
-              <el-checkbox label="允许评论" name="discuss"></el-checkbox>
-              <el-checkbox label="置顶" name="top"></el-checkbox>
-            </el-checkbox-group>
-          </el-form-item>
-          <el-form-item v-if="this.editModel">
-            <el-button @click="updateNews(1)" size="small" type="primary">确认修改并发布</el-button>
-            <el-button @click="updateNews(0)" size="small" type="success">确认修改并保存为草稿</el-button>
-            <el-button size="small">取消</el-button>
-          </el-form-item>
-          <el-form-item v-else>
-            <button @click="moni()">模拟</button>
-            <el-button @click="onSubmit(1)" size="small" type="primary">发布资讯</el-button>
-            <el-button @click="onSubmit(0)" size="small" type="success">保存草稿</el-button>
-            <el-button size="small">取消</el-button>
-          </el-form-item>
-        </el-form>
+        <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
+                style="text-align: left;box-sizing: border-box;padding-left: 25px">
+          <!--<el-tooltip content="新增" placement="top">
+            <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
+          </el-tooltip>-->
+          <el-tooltip content="导出报表" placement="top" >
+            <el-button type="primary"  icon="el-icon-download" size="small" plain @click="ExportData"></el-button>
+          </el-tooltip>
+        </el-col>
+
 
       </el-row>
+
+      <el-row class="panelArea">
+        <el-col :span="24">
+          <el-table
+            :data="tableData"
+            border
+            style="width: 100%">
+
+            <el-table-column
+              width="50"
+              type="index"
+              label="序号" align="center">
+            </el-table-column>
+
+            <el-table-column
+              width="200"
+              prop="deviceName"
+              label="设备名称" align="center">
+            </el-table-column>
+
+            <el-table-column
+              prop="deviceTypeString"
+              width="120"
+              label="设备类型" align="center">
+            </el-table-column>
+
+            <el-table-column
+              prop="deviceStatus"
+              width="120"
+              label="设备状态" align="center">
+            </el-table-column>
+
+            <!-- <el-table-column
+               prop="imei"
+               width="150"
+               label="IMEI值">
+             </el-table-column>-->
+
+            <!--  <el-table-column
+                prop="passwordName"
+                width="120"
+                label="设备密码">
+              </el-table-column>-->
+
+            <el-table-column
+              prop="position"
+              label="设备位置" align="center">
+            </el-table-column>
+
+            <el-table-column
+              prop="passwordName"
+              width="180"
+              label="开门时间" align="center">
+            </el-table-column>
+
+            <el-table-column
+              align="center"
+              fixed="right"
+              label="操作"
+              width="150">
+
+              <template slot-scope="scope">
+                <el-button @click="openDialog('edit',scope.row)" type="text" size="small">详情</el-button>
+                <!--<el-button type="text" size="small" @click="openDialog('delete',scope.row)">删除</el-button>-->
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+      </el-row>
+
+      <el-row class="panelArea">
+        <div class="block">
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-sizes="[10, 20, 30, 40,50]"
+            :page-size="page_size"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="page_total">
+          </el-pagination>
+        </div>
+      </el-row>
+
     </div>
 
+    <el-dialog
+      :append-to-body="true"
+      title="删除设备"
+      :visible.sync="dialogVisible"
+      width="30%">
+      <span>{{this.dialogText}}</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogConfirm('cancel')">取 消</el-button>
+    <el-button type="primary" @click="dialogConfirm('confirm')">确 定</el-button>
+  </span>
+    </el-dialog>
+
+
+    <el-dialog :append-to-body="true" :title="this.dialogText" @close="closeUserDialog" :visible.sync="dialogFormNew">
+      <el-form :model="form_user" ref="userForm" size="small">
+        <el-form-item label="设备名称" :label-width="formLabelWidth" prop="deviceName">
+          <el-row>
+            <el-col :span="12">
+              <el-input v-model="form_user.deviceName" auto-complete="off" :disabled="true"></el-input>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+        <el-form-item label="设备类型" :label-width="formLabelWidth" prop="deviceTypeString">
+          <el-row>
+            <el-col :span="12">
+              <el-input v-model="form_user.deviceTypeString" auto-complete="off" :disabled="true"></el-input>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+        <el-form-item label="电池电量" :label-width="formLabelWidth" prop="batteryLevel">
+          <el-row>
+            <el-col :span="12">
+              <el-input v-model="form_user.batteryLevel" auto-complete="off" :disabled="true" placeholder="100"></el-input>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+
+        <el-form-item label="设备状态" :label-width="formLabelWidth">
+          <el-select v-model="form_user.deviceStatus" placeholder="请选择状态" :disabled="true">
+            <el-option label="在线" value="1"></el-option>
+            <el-option label="离线" value="0"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="信号强度" :label-width="formLabelWidth" prop="passwordName">
+          <el-row>
+            <el-col :span="12">
+              <el-input v-model="form_user.passwordName" auto-complete="off" :disabled="true" placeholder="5"></el-input>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+        <el-form-item label="IMEI值" :label-width="formLabelWidth" prop="imei">
+          <el-row>
+            <el-col :span="12">
+              <el-input v-model="form_user.imei" auto-complete="off" :disabled="true" ></el-input>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+        <el-form-item label="设备密码" :label-width="formLabelWidth" prop="passwordName">
+          <el-row>
+            <el-col :span="12">
+              <el-input v-model="form_user.passwordName" auto-complete="off" :disabled="true" ></el-input>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+
+        <el-form-item label="设备位置" :label-width="formLabelWidth" prop="position">
+          <el-row>
+            <el-col :span="12">
+              <el-input v-model="form_user.position" auto-complete="off" :disabled="true"></el-input>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+        <el-form-item label="备注" :label-width="formLabelWidth" prop="remarks">
+          <el-row>
+            <el-col :span="12">
+              <el-input type="textarea" v-model="form_user.remarks" :disabled="true"></el-input>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <!--  <el-button @click="dialogConfirm('cancel')">取 消</el-button>-->
+        <el-button type="primary" @click="dialogConfirm('confirm')">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
+
 </template>
 
 <script>
+  /*import FileSaver from 'file-saver'
+  import XLSX from 'xlsx'*/
 
   export default {
-
     name: "releaseNews",
     data() {
-      return {
-        uploadUrl:window.CUIT_server.API_ROOT+"/user/uploadImg",
-        setHeader:{Authorization: Base64.decode(JSON.parse(localStorage.getItem('login')))},
-        user:"",
-        form: {
-          id:'',//仅 更新 新闻的时候使用
-          title: '',
-          firstImg:"",
-          type: '',
-          digest:"",
-          content:"",
-          contentHtml:"",
-          option:["允许评论"],
-        },
-        editModel:false,
-        newsType:[]
 
+      return {
+        loading: true,
+        action: "",//当前行为
+        currentPage: 1,//分页当前页
+        page_total: 0,//分页 总数
+        page_size: 10,//分页  一页的大小
+        id: "",//用户id 唯一标识
+        dialogVisible: false,//确认 的删除弹出  是否显示
+        dialogFormNew: false,// 添加 或 编辑 的 模态框  是否显示
+        formLabelWidth: "80px",//模态框右侧的label间距
+        form_user: {
+          deviceName: "",
+          passwordName: "",
+          deviceTypeString: "",
+          batteryLevel: "",
+          deviceStatus: "1",
+          position: "",
+          remarks: "",
+          imei: "",
+          passwordName:""
+        },//新增 和 编辑 的数据
+
+        dialogText: "",
+        search: "",//搜索框
+        search_select: "deviceName",//搜索框左侧下拉数据
+
+        tableData: [],//表单数据源
+
+
+//查询
+
+        //查询
+        vals:[],
+        formInline: {
+          options:[],
+          selectedOptions: [],
+          defaultParams: {
+            label: 'name',
+            value: 'name',
+            children: 'children'
+          },
+          value2: ''
+        },
+        TimeRange1:[],
+
+
+        //日期
+        value1:''
       }
     },
     methods: {
-
-      $imgDel(pos){
-        delete this.img_file[pos];
+      /**
+       *改变分页  页面显示条数
+       * @param val
+       */
+      handleSizeChange(val) {
+        this.page_size = val;
+        this.currentPage = 1;
+        this.requestApi("getUser");
       },
-      $imgAdd(pos, $file){
-        // 第一步.将图片上传到服务器.
-        let formdata = new FormData();
-        formdata.append('file', $file);
-        console.log(formdata.get("file"));
-        this.$axios({
-          url: '/user/uploadImg',
-          method: 'post',
-          data: formdata,
-          headers: { 'Content-Type': 'multipart/form-data' },
-        }).then((res) => {
-          // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
-          /**
-           * $vm 指为mavonEditor实例，可以通过如下两种方式获取
-           * 1. 通过引入对象获取: `import {mavonEditor} from ...` 等方式引入后，`$vm`为`mavonEditor`
-           * 2. 通过$refs获取: html声明ref : `<mavon-editor ref=md ></mavon-editor>，`$vm`为 `this.$refs.md`
-           */
-          console.log(res);
-         let url= window.CUIT_server.API_ROOT+"/"+res.data.map.url;
-          this.$refs.md.$img2Url(pos, url);
-        }).catch((error)=>{
-          // console.log(error);
-          // this.$refs.md.$img2Url(pos, "https://www.baidu.com/img/bd_logo1.png");
-        })
-
+      /**
+       * 切换分页
+       * @param val
+       */
+      handleCurrentChange(val) {
+        this.currentPage = val;
+        this.requestApi("getUser");
       },
+      handleClick(row) {
+        console.log(row);
+      },
+      /**
+       * 打开模态框，删除用户  新增用户  编辑用户
+       * @param type
+       * @param data
+       */
+      openDialog(type, data) {
+        if (type === 'edit') {
+          this.action = "edit";
+          this.id = data["id"];
+          for (let item in data) {
+            if (data.hasOwnProperty(item)) {
+              this.form_user[item] = data[item];
+            }
+          }
+          if (this.form_user.deviceStatus === "在线") {
+            this.form_user.deviceStatus = "1"
+          } else if (this.form_user.deviceStatus === "离线") {
+            this.form_user.deviceStatus = "0"
+          }
+          this.dialogText = "查看设备信息";
+          this.dialogFormNew = true;
+        }
+      },
+      /**
+       *关闭新增 编辑 用户的回调
+       */
+      closeUserDialog() {
+        this.$refs['userForm'].clearValidate();//清除验证
+      },
+      /**
+       * 确认或者取消
+       * @param res
+       */
+      dialogConfirm(res) {
+        if (this.action === "edit") {
+          if (res === "cancel") {
+            this.dialogFormNew = false;
+          } else {
+            console.log("保存编辑的设备");
+            this.$refs["userForm"].validate((valid) => {
+              if (valid) {
+                this.requestApi("edit");
+                this.dialogFormNew = false;
+                console.log("success！");
+                this.requestApi("getUser");
+              } else {
+                console.log('error submit!!');
+                return false;
+              }
+            });
+          }
+        }
+      },
+      requestApi(action, verifyCB) {
 
-     getHtmlContent(value,render){
-        this.form.contentHtml=render;
-     },
-      getNewsType() {
-        let data = {
-          pageNum: 1,
-          pageSize: 100
-        };
-        this.requestApiFnc("/newsType/getAll", "get", data,
-          (res) => {
-            const {data:{code,map:{pageInfo:{list}},message,success}} =res;
-            if(code !==200){
-              this.ele_alert(message,"error");
+        switch (action) {
+          case "edit":
+            this.$axios.put("/device", {
+                id: this.id,
+                deviceName: this.form_user.deviceName,
+                imei: this.form_user.imei,
+                deviceTypeString: this.form_user.deviceTypeString,
+                passwordName: this.form_user.passwordName,
+                batteryLevel: this.form_user.batteryLevel,
+                position: this.form_user.position,
+                remarks: this.form_user.remarks,
+                deviceStatus: this.form_user.deviceStatus,
+              },
+              {
+                headers:{
+                  'Authorization':'Bearer ' +sessionStorage.getItem("token")
+                }
+              }).then((res) => {
+              if (res.data.code === 0) {
+                // this.tips("更新成功！","success");
+                this.requestApi("getUser")
+              } else {
+                this.tips(res.data.message,"warning");
+                // this.tips("更新失败！");
+              }
+            }).catch((error) => {
+            });
+            break;
+
+          case "getUser":
+            if (this.search !=="") {
+              this.requestApi("search");//如果搜索框内有参数， 就执行搜索 接口
               return;
             }
-            this.newsType=list;
-            // console.log(this.tableData);
-          })
-      },
-      moni(){
+            this.loading = true;
 
-        let da = [
-          "晃晃悠悠的一朝一暮",
-          "追光的人，身披万丈光芒",
-          "一辈子很短，要欢喜",
-          "愿所有的久别重逢都是别来无恙​​​​",
-          "往上攀，总能登顶",
-          "华为拿下25份5G商业合同全球第一",
-          "俄军新型武器可保俄十年安全",
-          "三星发布Micro LED电视及未来人工智能平台",
-          "备战 2019，小米的 6 大动作和 3 个逻辑",
-          "俄军新型武器可保俄十年安全",
-          "三星发布Micro LED电视及未来人工智能平台",
-          "备战 2019，小米的 6 大动作和 3 个逻辑",
-        ]
-
-     setInterval(()=>{
-
-       let discuss;
-       let important;
-
-       this.form.option.indexOf("允许评论") !== -1 ? discuss = 1 : discuss = 0;
-       this.form.option.indexOf("置顶") !== -1 ? important = 1 : important = 0;
-
-       const data={
-         title:da[Math.floor(Math.random()*10)] + Math.floor(Math.random()*10)+Math.floor(Math.random()*10),
-         author:"33ea7030-d38f-4d0b-8338-b2ba36f2d7ad",
-         // type:"默认",
-         type:"f38b292e-14ac-4738-b0d9-accd74f968aa",
-         digest:"测试摘要测试摘要测试摘要测试摘要测试摘要",
-         firstImg:"http://120.78.149.155:8040/1545232360678.jpeg",
-         content:"测试内容测试内容测试内容测试内容测试内容测试内容测试内容测试内容![croppedtimg.jpg](http://120.78.149.155:8040/1545232379678.jpeg)",
-         contentHtml:"<p>测试内容测试内容测试内容测试内容测试内容测试内容测试内容测试内容<img src='http://120.78.149.155:8040/1545232379678.jpeg' alt='croppedtimg.jpg' /></p>",
-         status:1,//type 1 发布文章  type 0 保存草稿
-         discuss,
-         important
-       };
-       this.requestApiFnc("/news/add","post",data,(res)=>{
-         let {data:{code,map,message}} = res;
-         if (code===200){
-           this.tips("发布新闻成功！","success");
-           // this.ele_alert("发布新闻成功！","success",()=> this.$router.push({path: "/newsManagement"}));
-         }else {
-           this.ele_alert(message,"error");
-         }
-       })
-
-     },1500)
-
-      },
-      onSubmit(type) {
-        // console.log(this.$refs.md);
-
-        let discuss;
-        let important;
-
- this.form.option.indexOf("允许评论") !== -1 ? discuss = 1 : discuss = 0;
- this.form.option.indexOf("置顶") !== -1 ? important = 1 : important = 0;
-
-       const data={
-         title:this.form.title,
-         author:this.user,
-         // type:"默认",
-         type:this.form.type,
-         digest:this.form.digest,
-         firstImg:this.form.firstImg,
-         content:this.form.content,
-         contentHtml:this.form.contentHtml,
-         status:type,//type 1 发布文章  type 0 保存草稿
-         discuss,
-         important
-       };
-
-
-       this.requestApiFnc("/news/add","post",data,(res)=>{
-         let {data:{code,map,message}} = res;
-         if (code===200){
-           this.ele_alert("发布新闻成功！","success",()=> this.$router.push({path: "/newsManagement"}));
-         }else {
-           this.ele_alert(message,"error");
-         }
-       })
-      },
-      updateNews(type) {
-        // console.log(this.$refs.md);
-        let discuss;
-        let important;
-        this.form.option.indexOf("允许评论") !== -1 ? discuss = 1 : discuss = 0;
-        this.form.option.indexOf("置顶") !== -1 ? important = 1 : important = 0;
-        const data={
-          id:this.form.id,
-          title:this.form.title,
-          author:"3f3ff415-b27f-46cd-bf4d-17b8b14836a8",
-          type:this.form.type,
-          digest:this.form.digest,
-          firstImg:this.form.firstImg,
-          content:this.form.content,
-          contentHtml:this.form.contentHtml,
-          status:type,//type 1 发布文章  type 0 保存草稿
-          discuss,
-          important
-        };
-
-
-        this.requestApiFnc("/news/update","put",data,(res)=>{
-          let {data:{code,map,message}} = res;
-          if (code===200){
-            this.ele_alert("发布新闻成功！","success",()=> this.$router.push({path: "/newsManagement"}));
-          }else {
-            this.ele_alert(message,"error");
-          }
-        })
-      },
-
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      uploadSuccess(response, file, fileList){
-        console.log(response,file,fileList);
-        this.form.firstImg = window.CUIT_server.API_ROOT+"/"+response.map.url;
-        console.log(this.form.firstImg);
-      },
-      uploadError(err, file, fileList){
-        console.log(err,file,fileList)
-      },
-      initEditModel(nid){
-
-        this.requestApiFnc(`/news/getNewsById`,`get`,{
-          newsId:nid
-        },(res)=>{
-          console.log(res);
-          const {data:{code,map:{news},message}} = res;
-          if (code===200){
-            this.user=news.author;
-            this.form.id = news.id;
-            this.form.title=news.title;
-            this.form.digest=news.digest;
-            this.form.content=news.content;
-            this.form.type=news.type;
-            this.form.firstImg=news.firstImg;
-            this.form.option=[];
-            if(news.discuss){
-              this.form.option.push("允许评论");
-            }
-            if (news.important) {
-              this.form.option.push("置顶");
-            }
-          }
-          else {
-            this.ele_alert(message,"error",()=> this.$router.push({path: "/newsManagement"}),()=> this.$router.push({path: "/newsManagement"}));
-          }
-
-
-        })
-
-      }
-
-    },
-    mounted() {
-
-    },
-    created() {
-      this.toTop();
-      this. getNewsType();
-      const u = this.getStorage('user');
-      this.user = JSON.parse(this.$base64.decode(u)).id;
-      console.dir(this.user);
-      const action = this.$route.query.action;
-      const newsId = this.$route.query.newsId;
-      if(action && newsId){
-        this.editModel = action === "edit";// 判断action 是edit  则进入编辑模式
-        if(this.editModel){
-          this.initEditModel(newsId);
+            this.$axios({//查看学校设备列表
+              method:'get',
+              url:'/device/list',
+              headers:{
+                'Authorization':'Bearer ' +sessionStorage.getItem("token")
+              },
+              params:{
+                pageNum:this.currentPage
+              }
+            } ).then((res) => {
+              if (res.data.code === 0) {
+                let list = res.data.data.list;
+                this.page_total = res.data.data.pageSum;
+                this.tableData = list.map(function (item) {
+                  if (item.deviceStatus === 1) {
+                    item.deviceStatus = "在线"
+                  } else if (item.deviceStatus === 0) {
+                    item.deviceStatus = "离线"
+                  } else {
+                    item.loginTime = "暂无记录";
+                  }
+                  return item;
+                });
+              } else {
+                this.tips(res.data.message,"warning");
+              }
+              this.loading = false;
+            }).catch((error) => {
+              this.tips( "系统出错！","error");
+              console.log(error);
+              this.loading = false;
+            });
+            break;
         }
-      }
+      },
+      ExportData() {
+        import("@/vendor/Export2Excel").then(excel => {
+          //表格的表头列表
+          const tHeader = [ "设备名称", "设备类型", "设备状态","设备位置","开门时间"];
+          //与表头相对应的数据里边的字段
+          const filterVal = ['deviceName' ,'deviceTypeString','deviceStatus','position','passwordName'];
+          const list = this.tableData;
+          const data = this.formatJson(filterVal, list);
+          //这里还是使用export_json_to_excel方法比较好，方便操作数据
+          excel.export_json_to_excel(tHeader,data,'天诚智能门锁开门记录');
+        });
+      },
+      formatJson(filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => v[j]))
+      },
+
+      // 从后台获取数据
+      getProductType(){
+        this.$axios({//查看三级查询列表
+          method:'get',
+          url:'/schoolRoom/roomPositionList',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          },
+          params:{
+            pageNum:this.currentPage
+          }
+        } ).then((res) => {
+
+          console.log(res.data.data)
+          this.options=res.data.data;
+          console.log("2222222222222222222222222222");
+          console.log("2222222222222222222222222222");
+          console.log(this.options)
+          console.log("3443535436356346533546576543")
+        })
+      },
+      chooseTimeRange(t) {
+        console.log("输出时间数组");
+        console.log(t);//结果为一个数组，如：["2018-08-04", "2018-08-06"]
+        this.TimeRange1 = t;
+      },
+
+      handelChange(value){
+
+        this.vals=value;
+        console.log(value);
+        console.log(this.vals);
+        console.log(this.vals[0])
+      },
+      onSubmit() {
+        console.log("2222222222222222222222222222");
+        console.log("3443535436356346533546576543")
+        console.log(this.vals);
+        console.log(this.vals[0])
+        this.$axios({//查询
+          method:'get',
+          url:'/deviceLock/log/list',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          },
+          params:{
+            buildingType:this.vals[0],
+            buildingName:this.vals[1],
+            floorName:this.vals[2],
+            roomNumber:this.vals[3],
+            beginTime: this.TimeRange1[0],
+            endTime: this.TimeRange1[1],
+            pageNum: this.currentPage,
+          }
+        } ).then((res) => {
+          if (res.data.code === 0) {
+            let list = res.data.data.list;
+            this.page_total = res.data.data.pageSum;
+            this.tableData = list.map(function (item) {
+              if (item.deviceStatus === 1) {
+                item.deviceStatus = "在线"
+              } else if (item.deviceStatus === 0) {
+                item.deviceStatus = "离线"
+              } else {
+                item.loginTime = "暂无记录";
+              }
+              return item;
+            });
+          } else {
+            this.tips(res.data.message,"warning");
+          }
+          this.loading = false;
+        }).catch((error) => {
+          this.tips( "系统出错！","error");
+          console.log(error);
+          this.loading = false;
+        });
+      },
+
+    }, created() {
+      this.requestApi("getUser");
+      this.getProductType();
     }
   }
 </script>
 
 <style lang="scss" scoped>
-  @import "../../assets/styles/base";
-
-  .c-main {
-
-
-
+  .c-main /deep/ .el-select .el-input {
+    width: 120px;
+    text-align: center;
   }
+
+  .c-main /deep/ .input-with-select .el-input-group__prepend {
+    background-color: #fff;
+  }
+
+
 </style>

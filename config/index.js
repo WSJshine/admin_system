@@ -4,6 +4,7 @@
 
 const path = require('path')
 
+
 module.exports = {
   dev: {
 
@@ -12,7 +13,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://192.168.10.27:9001/api/web/school',//这里是服务器地址额
+        target: 'http://101.132.70.78:9001/api/web/school',//这里是服务器地址额
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''//这里理解成用‘/api’代替target里面的地址，后面组件中我们掉接口时直接用api代替 比如我要调用'http://40.00.100.100:3002/user/add'，直接写‘/api/user/add’即可
@@ -49,7 +50,7 @@ module.exports = {
     index: path.resolve(__dirname, '../dist/index.html'),
 
     // Paths
-    assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsRoot: path.resolve(__dirname, '../school'),
     assetsSubDirectory: 'static',
     assetsPublicPath: './',
 

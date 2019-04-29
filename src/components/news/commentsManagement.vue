@@ -47,6 +47,11 @@
           <el-tooltip content="新增" placement="top">
             <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
           </el-tooltip>
+          <el-tooltip content="批量删除" placement="top" >
+
+            <el-button type="primary" @click="batchDelete(tableChecked)" icon="el-icon-delete" size="small" plain></el-button>
+
+          </el-tooltip>
           <el-tooltip content="导出报表" placement="top">
             <el-button type="primary"  icon="el-icon-download" size="small" plain></el-button>
           </el-tooltip>
@@ -59,8 +64,15 @@
         <el-col :span="24">
           <el-table
             :data="tableData"
+            @selection-change="handleSelectionChange"
             border
             style="width: 100%">
+
+            <el-table-column
+              type="selection"
+              label="全选"
+              width="55">
+            </el-table-column>
 
             <el-table-column
               width="50"
@@ -69,46 +81,44 @@
             </el-table-column>
 
             <el-table-column
-              prop="avatarUrl"
-              label="头像">
-              <template>
-                <img :src="avatarUrl" width="240" height="40" class="head_pic"/>
+              label="头像" align="center" width="180">
+              <template slot-scope="scope">
+                <img :src="scope.row.avatarUrl" width="40" height="40" class="head_pic"/>
               </template>
             </el-table-column>
 
             <el-table-column
               prop="name"
-              label="姓名">
+              label="姓名" align="center" width="150">
             </el-table-column>
 
             <el-table-column
               prop="gender"
               width="120"
-              label="性别">
+              label="性别" align="center">
             </el-table-column>
 
             <el-table-column
               prop="age"
               width="90"
-              label="年龄">
+              label="年龄" align="center">
             </el-table-column>
 
             <el-table-column
               width="150"
               prop="position"
-              label="职位">
+              label="职位" align="center">
             </el-table-column>
 
             <el-table-column
               prop="phoneNumber"
-              width="120"
-              label="联系方式">
+              width="180"
+              label="联系方式" align="center">
             </el-table-column>
 
             <el-table-column
               prop="schoolAddress"
-              width="120"
-              label="宿舍号">
+              label="宿舍号" align="center">
             </el-table-column>
 
             <el-table-column
@@ -200,9 +210,7 @@
 
         <el-form-item label="宿舍号" :label-width="formLabelWidth" prop="schoolAddress">
           <el-row>
-            <!--<el-col :span="12">
-              <el-input v-model="form_user.schoolAddress" auto-complete="off"  ></el-input>
-            </el-col>-->
+
             <el-cascader
               :change-on-select="true"
               :props="defaultParams"
@@ -256,14 +264,7 @@
   export default {
     name: "commentsManagement",
     data() {
-      /*let checkid = (rule, value, callback) =>{
-        let k= this.vals.length-1;
-        if(this.vals[k] === 0){
-          return callback(new Error("未选中学生宿舍房间号"));
-        }else {
-          callback(); //这个会变绿
-        }
-      };*/
+
 
       let checkremarks = (rule, value, callback) => {
         if (value.length >= 35) {
@@ -288,9 +289,7 @@
         dialogFormNew: false,// 添加 或 编辑 的 模态框  是否显示
         formLabelWidth: "80px",//模态框右侧的label间距
         formRulers: {
-         /* schoolAddress:[
-            {validator: checkid, trigger: 'blur'}
-          ],*/
+
           remarks: [
             {validator: checkremarks, trigger: 'blur'}
           ]
@@ -625,9 +624,7 @@
       beforeAvatarUpload(file) { //上传前的函数
         //上传前对图片类型和大小进行判断
         const isJPG = file.type === 'image/jpeg'||file.type === 'image/png';
-        /*const isGIF = file.type === 'image/gif';
-        const isPNG = file.type === 'image/png';
-        const isBMP = file.type === 'image/bmp';*/
+
         const isLt10M = file.size / 1024 / 1024 <10;
 
         if (!isJPG) {
@@ -700,6 +697,51 @@
         console.log(this.vals);
         console.log(this.vals[3])
 
+      },
+
+
+      handleSelectionChange(val){
+        console.log("handleSelectionChange--",val)
+        this.tableChecked = val
+      },
+      //批量删除
+      batchDelete(rows){
+        console.log(rows);
+        var _this = this;
+        var idsarr = [];
+        _this.$confirm('是否确认此操作?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          rows.forEach(element =>{
+            console.log(element);
+            idsarr.push(element.id)
+
+
+            this.$axios.delete("/schoolBasicPersonnelInfo", {//删除学生
+              params: {
+                ids: element.id
+              },
+              headers: {
+                'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+              }
+            }).then((res) => {
+              if (res.data.code === 0) {
+                this.tips("删除成功！", "success");
+                this.requestApi("getUser")
+              } else {
+                this.tips(res.data.message, "warning");
+                this.tips("删除no成功！");
+              }
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          });
+        });
       },
 
     }, created() {

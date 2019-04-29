@@ -29,7 +29,7 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/login',
+      path: '/',
       name: 'Login',
       component: Login
     },
@@ -39,7 +39,7 @@ export default new Router({
       component: Register
     },
     {
-      path: '/',
+      path: '/frame',
       name: 'Frame',
       component: Frame,
       children: [

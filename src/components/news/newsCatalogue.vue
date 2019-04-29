@@ -23,20 +23,31 @@
         <el-col :span="18" :offset="1" :md="16" :lg="16" :xs="3" :sm="24">
 
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
-            <el-form-item label="设备名称">
-              <el-input  placeholder="设备名称" v-model="formInline.deviceName" size="small"></el-input>
+            <el-form-item label="设备位置">
+              <!--<el-input  placeholder="设备名称" v-model="formInline.deviceName" size="small"></el-input>-->
+              <el-cascader
+                :change-on-select="true"
+                :props="formInline.defaultParams"
+                :options="formInline.options"
+                v-model="formInline.selectedOptions"
+                @change="handelChange"
+                size="small"
+              ></el-cascader>
             </el-form-item>
             <el-form-item label="报警时间">
             <el-date-picker
               type="datetimerange"
+              v-model="formInline.value2"
               size="small"
+              value-format="yyyy-MM-dd HH:mm:ss"
               range-separator="至"
               start-placeholder="开始日期"
-              end-placeholder="结束日期">
+              end-placeholder="结束日期"
+              @change="chooseTimeRange">
             </el-date-picker>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSubmit"> 查询</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="onSubmit" size="small">搜索</el-button>
             </el-form-item>
           </el-form>
         </el-col>
@@ -44,7 +55,7 @@
         <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
                 style="text-align: left;box-sizing: border-box;padding-left: 25px">
           <el-tooltip content="导出报表" placement="top">
-            <el-button type="primary"  icon="el-icon-download" size="small" plain></el-button>
+            <el-button type="primary"  icon="el-icon-download" size="small" plain @click="ExportData"></el-button>
           </el-tooltip>
 
         </el-col>
@@ -62,42 +73,49 @@
             <el-table-column
               width="50"
               type="index"
-              label="序号">
+              label="序号"
+              align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceName"
-              label="设备名称">
+              label="设备名称"
+              width="200"
+              align="center">
             </el-table-column>
 
             <el-table-column
-              width="150"
-              prop="position"
-              label="设备位置">
+              prop="devicePosition"
+              label="设备位置"
+              align="center">
             </el-table-column>
 
             <el-table-column
-              prop="alarmdeviceTypeName"
+              prop="alarmDeviceTypeString"
               width="120"
-              label="报警类型">
+              label="报警类型"
+              align="center">
             </el-table-column>
 
             <el-table-column
               prop="createTime"
-              width="90"
-              label="报警时间">
+              width="180"
+              label="报警时间"
+              align="center">
             </el-table-column>
 
             <el-table-column
               prop="handlerId"
               width="120"
-              label="处理人员">
+              label="处理人员"
+              align="center">
             </el-table-column>
 
             <el-table-column
               prop="handleStatusString"
               width="120"
-              label="处理情况">
+              label="处理情况"
+              align="center">
             </el-table-column>
 
             <el-table-column
@@ -185,18 +203,18 @@
           </el-row>
         </el-form-item>
 
-        <el-form-item label="设备位置" :label-width="formLabelWidth" prop="position">
+        <el-form-item label="设备位置" :label-width="formLabelWidth" prop="devicePosition">
           <el-row>
             <el-col :span="12">
-              <el-input v-model="form_user.position" auto-complete="off"></el-input>
+              <el-input v-model="form_user.devicePosition" auto-complete="off"></el-input>
             </el-col>
           </el-row>
         </el-form-item>
 
-        <el-form-item label="报警类型" :label-width="formLabelWidth" prop="alarmdeviceTypeName">
+        <el-form-item label="报警类型" :label-width="formLabelWidth" prop="alarmDeviceTypeString">
           <el-row>
             <el-col :span="12">
-              <el-input v-model="form_user.alarmdeviceTypeName" auto-complete="off" :disabled="true" ></el-input>
+              <el-input v-model="form_user.alarmDeviceTypeString" auto-complete="off" :disabled="true" ></el-input>
             </el-col>
           </el-row>
         </el-form-item>
@@ -253,10 +271,10 @@
         form_user: {
           deviceName: "",
           handleStatusString: "",
-          alarmdeviceTypeName: "",
+          alarmDeviceTypeString: "",
           handlerId: "",
           createTime: "1",
-          position: "",
+          devicePosition: "",
           imei: "",
         },//新增 和 编辑 的数据
 
@@ -269,10 +287,18 @@
 
 
 //查询
+vals:[],
         formInline: {
-          deviceName: '',
+          options:[],
+          selectedOptions: [],
+          defaultParams: {
+            label: 'name',
+            value: 'name',
+            children: 'children'
+          },
           value2: ''
-        }
+        },
+        TimeRange1:[]
       }
     },
     methods: {
@@ -315,7 +341,7 @@
           this.form_user = {
             deviceName: "",
             handleStatusString: "",
-            alarmdeviceTypeName: "",
+            alarmDeviceTypeString: "",
             handlerId: "",
             createTime: "1",
             position: "",
@@ -402,10 +428,10 @@
                 id: this.id,
                 deviceName: this.form_user.deviceName,
                 imei: this.form_user.imei,
-                alarmdeviceTypeName: this.form_user.alarmdeviceTypeName,
+                alarmDeviceTypeString: this.form_user.alarmDeviceTypeString,
                 handleStatusString: this.form_user.handleStatusString,
                 handlerId: this.form_user.handlerId,
-                position: this.form_user.position,
+                devicePosition: this.form_user.devicePosition,
                 createTime: this.form_user.createTime,
               },
               {
@@ -516,15 +542,16 @@
       onSubmit() {
         this.$axios({//查询
           method:'get',
-          url:'/device/list',
+          url:'/device/alarm/list',
           headers:{
             'Authorization':'Bearer ' +sessionStorage.getItem("token")
           },
           params:{
             pageNum:this.currentPage,
             deviceName: this.formInline.deviceName,
-            alarmdeviceTypeName: this.formInline.alarmdeviceTypeName,
-            createTime: this.formInline.createTime
+            alarmDeviceTypeString: this.formInline.alarmDeviceTypeString,
+            beginTime: this.TimeRange1[0],
+            endTime: this.TimeRange1[1]
           }
         } ).then((res) => {
           if (res.data.code === 0) {
@@ -549,9 +576,62 @@
           console.log(error);
           this.loading = false;
         });
-      }
+      },
+      chooseTimeRange(t) {
+        console.log("输出时间数组");
+        console.log(t);//结果为一个数组，如：["2018-08-04", "2018-08-06"]
+        this.TimeRange1 = t;
+      },
+
+
+      handelChange(value){
+
+        this.vals=value;
+        console.log(value);
+        console.log(this.vals);
+        console.log(this.vals[0])
+      },
+      // 从后台获取数据
+      getProductType(){
+        this.$axios({//查看三级查询列表
+          method:'get',
+          url:'/schoolRoom/roomPositionList',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          },
+          params:{
+            pageNum:this.currentPage
+          }
+        } ).then((res) => {
+
+          console.log(res.data.data)
+          this.formInline.options=res.data.data;
+          console.log("2222222222222222222222222222");
+          console.log("2222222222222222222222222222");
+          console.log(this.formInline.options)
+          console.log("3443535436356346533546576543")
+        })
+      },
+
+      ExportData() {
+        import("@/vendor/Export2Excel").then(excel => {
+          //表格的表头列表
+          const tHeader = ["设备名称", "设备位置", "报警类型","报警时间","处理人员","处理情况"];
+          //与表头相对应的数据里边的字段
+          const filterVal = ['deviceName' ,'devicePosition','alarmDeviceTypeString','createTime','handlerId','handleStatusString'];
+          const list = this.tableData;
+          const data = this.formatJson(filterVal, list);
+          //这里还是使用export_json_to_excel方法比较好，方便操作数据
+          excel.export_json_to_excel(tHeader,data,'天诚智能门锁报警记录');
+        });
+      },
+      formatJson(filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => v[j]))
+      },
+
     }, created() {
       this.requestApi("getUser");
+      this.getProductType();
     }
   }
 </script>

@@ -34,6 +34,7 @@ Vue.prototype.$axiosTools=axios;//可用于并发请求
 
 Vue.prototype.$axios=axiosHttp;
 
+axios.defaults.baseURL = '/api';
 
 Vue.prototype.setStorage =function (key,value) {
   localStorage.setItem(key, JSON.stringify(value));

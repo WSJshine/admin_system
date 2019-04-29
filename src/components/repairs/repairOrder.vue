@@ -74,42 +74,42 @@
             <el-table-column
               width="50"
               type="index"
-              label="序号">
+              label="序号" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceName"
-              label="设备名称">
+              width="200"
+              label="设备名称" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceTypeString"
               width="120"
-              label="设备类型">
+              label="设备类型" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceStatus"
               width="90"
-              label="设备状态">
+              label="设备状态" align="center">
             </el-table-column>
 
             <el-table-column
               prop="batteryLevel"
               width="120"
-              label="电池电量">
+              label="电池电量" align="center">
             </el-table-column>
 
             <el-table-column
               prop="signalLevel"
               width="120"
-              label="信号强度">
+              label="信号强度" align="center">
             </el-table-column>
 
             <el-table-column
-              width="150"
               prop="position"
-              label="设备位置">
+              label="设备位置" align="center">
             </el-table-column>
 
             <el-table-column
@@ -180,14 +180,14 @@
         <el-form-item label="电池电量" :label-width="formLabelWidth" prop="batteryLevel">
           <el-row>
             <el-col :span="12">
-              <el-input v-model="form_user.batteryLevel" auto-complete="off" :disabled="true" placeholder="100"></el-input>
+              <el-input v-model="form_user.batteryLevel" auto-complete="off" :disabled="true"></el-input>
             </el-col>
           </el-row>
         </el-form-item>
 
 
         <el-form-item label="设备状态" :label-width="formLabelWidth">
-          <el-select v-model="form_user.deviceStatus" placeholder="请选择状态">
+          <el-select v-model="form_user.deviceStatus" placeholder="请选择状态"  :disabled="true">
             <el-option label="在线" value="1"></el-option>
             <el-option label="离线" value="0"></el-option>
           </el-select>
@@ -196,10 +196,11 @@
         <el-form-item label="信号强度" :label-width="formLabelWidth" prop="signalLevel">
           <el-row>
             <el-col :span="12">
-              <el-input v-model="form_user.signalLevel" auto-complete="off" :disabled="true" placeholder="5"></el-input>
+              <el-input v-model="form_user.signalLevel" auto-complete="off" :disabled="true"></el-input>
             </el-col>
           </el-row>
         </el-form-item>
+
 
         <el-form-item v-if="this.action==='add'" label="IMEI值" prop="imei" :label-width="formLabelWidth" >
           <el-row>
@@ -208,22 +209,66 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item v-if="this.action==='edit'" label="IMEI值" :label-width="formLabelWidth">
+        <el-form-item v-if="this.action==='edit'" label="IMEI值"  prop="imei" :label-width="formLabelWidth">
           <el-row>
             <el-col :span="12">
-              <el-input v-model="form_user.imei"  auto-complete="off"
-                        placeholder="（不填写此处将不会修改IMEI值）"></el-input>
+              <el-input v-model="form_user.imei"  auto-complete="off"  :disabled="true"></el-input>
             </el-col>
           </el-row>
         </el-form-item>
 
 
-        <el-form-item label="设备位置" :label-width="formLabelWidth" prop="position">
+       <!-- <el-form-item label="设备位置" :label-width="formLabelWidth" prop="position" v-model="form_user.position">
           <el-row>
             <el-col :span="12">
               <el-input v-model="form_user.position" auto-complete="off"></el-input>
             </el-col>
           </el-row>
+        </el-form-item>-->
+
+        <el-form-item label="楼栋类型" :label-width="formLabelWidth" prop="buildingType">
+          <el-select v-model="form_user.buildingType" placeholder="请选择楼栋类型"  @change="selectbuildingType">
+            <el-option
+              v-for="name in options"
+              :key="name.name"
+              :label="name.name"
+              :value="name.name">
+            </el-option>
+          </el-select>
+
+        </el-form-item>
+
+        <el-form-item label="楼栋名称" :label-width="formLabelWidth" prop="buildingName">
+          <el-select v-model="form_user.buildingName" placeholder="请选择楼栋名称"  @change="selectbuildingName" >
+            <el-option
+              v-for="(name,index) in one"
+              :label="name.name"
+              :value="name.name"
+              :key="index">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="楼层" :label-width="formLabelWidth" prop="floorName">
+          <el-select v-model="form_user.floorName" placeholder="请选择楼层"  @change="selectfloorName" >
+            <el-option
+              v-for="(name,index) in two"
+              :label="name.name"
+              :value="name.name"
+              :key="index">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="房间号" :label-width="formLabelWidth" prop="roomNumber">
+          <el-select v-model="form_user.roomNumber" placeholder="请选择房间号" >
+            <el-option
+              v-for="(name,index) in three"
+              :label="name.name"
+              :value="name.name"
+              :key="index">
+            </el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="备注" :label-width="formLabelWidth" prop="remarks">
@@ -291,7 +336,7 @@
           signalLevel: "",
           deviceTypeString: "",
           batteryLevel: "",
-          deviceStatus: "1",
+          deviceStatus: "",
           position: "",
           remarks: "",
           imei: "",
@@ -310,7 +355,19 @@
           deviceName: '',
           deviceTypeString: '',
           deviceStatus:''
-        }
+        },
+
+        vals:[],
+        one:[],
+        two:[],
+        three:[],
+        options:[],
+        selectedOptions: [],
+        defaultParams: {
+          label: 'name',
+          value: 'name',
+          children: 'children'
+        },
       }
     },
     methods: {
@@ -355,7 +412,7 @@
             signalLevel: "",
             deviceTypeString: "",
             batteryLevel: "",
-            deviceStatus: "1",
+            deviceStatus: "",
             position: "",
             remarks: "",
             imei: "",
@@ -373,7 +430,7 @@
           } else if (this.form_user.deviceStatus === "离线") {
             this.form_user.deviceStatus = "0"
           }
-          this.form_user.imei = "";
+          // this.form_user.imei = "";
           this.dialogText = "编辑设备信息";
           this.dialogFormNew = true;
         }
@@ -655,16 +712,7 @@
             console.log(element);
             idsarr.push(element.id)
 
-        /*  console.log("1111111111");
-          console.log(idsarr);
-          console.log("222222222222");
-          for(var i=0;i<idsarr.length;i++) {
-            var j = idsarr[i].count;*/
 
-            /*       var dataarrw = [];
-          for(var j=0;j<idsarr.length;j++){
-            dataarrw.push(idsarr[j].count);
-          }*/
             this.$axios.delete("/device", {//删除学校设备
               params: {
                 ids: element.id
@@ -690,8 +738,62 @@
         });
       },
 
+
+
+      // 从后台获取数据
+      getProductType(){
+        this.$axios({//查看三级查询列表
+          method:'get',
+          url:'/schoolRoom/roomPositionList',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          },
+          params:{
+            pageNum:this.currentPage
+          }
+        } ).then((res) => {
+
+          console.log(res.data.data)
+          this.options=res.data.data;
+          console.log("2222222222222222222222222222");
+          console.log("2222222222222222222222222222");
+          console.log(this.options)
+          console.log("3443535436356346533546576543")
+        })
+      },
+      handelChange(value){
+
+        this.vals=value;
+        console.log(value);
+        console.log(this.vals);
+        console.log(this.vals[0])
+      },
+      selectbuildingType(value){
+        for(var i=0;i<this.options.length;i++){
+          if(value === this.options[i].name){
+            this.one = this.options[i].children;
+          }
+        }
+        console.log(this.one)
+      },
+      selectbuildingName(value){
+        for(var i=0;i<this.one.length;i++){
+          if(value === this.one[i].name){
+            this.two = this.one[i].children;
+          }
+        }
+      },
+      selectfloorName(value){
+        for(var i=0;i<this.two.length;i++){
+          if(value === this.two[i].name){
+            this.three = this.two[i].children;
+          }
+        }
+      },
+
     }, created() {
       this.requestApi("getUser");
+      this.getProductType();
     }
   }
 </script>

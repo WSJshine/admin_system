@@ -65,42 +65,42 @@
             <el-table-column
               width="50"
               type="index"
-              label="序号">
+              label="序号" align="center">
             </el-table-column>
 
             <el-table-column
-              width="150"
+              width="200"
               prop="deviceName"
-              label="设备名称">
+              label="设备名称" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceTypeString"
               width="120"
-              label="设备类型">
+              label="设备类型" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceStatus"
-              width="90"
-              label="设备状态">
+              width="120"
+              label="设备状态" align="center">
             </el-table-column>
 
             <el-table-column
               prop="imei"
-              width="150"
-              label="IMEI值">
+              width="200"
+              label="IMEI值" align="center">
             </el-table-column>
 
             <el-table-column
               prop="passwordName"
-              width="120"
-              label="设备密码">
+              width="150"
+              label="设备密码" align="center">
             </el-table-column>
 
             <el-table-column
               prop="position"
-              label="设备位置">
+              label="设备位置" align="center">
             </el-table-column>
 
             <el-table-column

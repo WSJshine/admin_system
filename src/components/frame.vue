@@ -52,12 +52,12 @@
                    text-color="#fff"
                    active-text-color="#33a0d7">
 
-            <el-menu-item index="/home">
+            <el-menu-item index="/frame/home">
               <i class="fa fa-home"></i>
               <span>首页</span>
             </el-menu-item>
 
-            <el-menu-item index="/housing">
+            <el-menu-item index="/frame/housing">
 
               <i class="fa fa-home"></i>
               <span>房源管理</span>
@@ -68,8 +68,8 @@
                 <i class="fa el-icon-printer"></i>
                 <span>设备管理</span>
               </template>
-              <el-menu-item index="/repairs_order">智能锁</el-menu-item>
-              <el-menu-item index="/repairs_building">设备密码管理</el-menu-item>
+              <el-menu-item index="/frame/repairs_order">智能锁</el-menu-item>
+              <el-menu-item index="/frame/repairs_building">设备密码管理</el-menu-item>
             </el-submenu>
 
             <el-submenu index="2">
@@ -82,8 +82,8 @@
               <el-menu-item index="/newsType">新闻分类</el-menu-item>-->
               <!--<el-menu-item index="/comments">评论管理</el-menu-item>-->
               <!--<el-menu-item index="/slideshowManagement">轮播图管理</el-menu-item>-->
-              <el-menu-item index="/newsManagement">开门记录</el-menu-item>
-              <el-menu-item index="/newsType">报警记录</el-menu-item>
+              <el-menu-item index="/frame/newsManagement">开门记录</el-menu-item>
+              <el-menu-item index="/frame/newsType">报警记录</el-menu-item>
             </el-submenu>
 
             <el-submenu index="5">
@@ -91,23 +91,23 @@
                 <i class="fa fa-users"></i>
                 <span>人员管理</span>
               </template>
-              <el-menu-item index="/comments">学生</el-menu-item>
-              <el-menu-item index="/slideshowManagement">教师</el-menu-item>
+              <el-menu-item index="/frame/comments">学生</el-menu-item>
+              <el-menu-item index="/frame/slideshowManagement">教师</el-menu-item>
             </el-submenu>
 
 
-            <el-submenu index="6">
+     <!--       <el-submenu index="6">
               <template slot="title">
                 <i class="fa fa-cog"></i>
                 <span>系统管理</span>
               </template>
-              <!--<el-menu-item index="/link">友情链接</el-menu-item>-->
+              &lt;!&ndash;<el-menu-item index="/link">友情链接</el-menu-item>&ndash;&gt;
               <el-menu-item index="/userManagement">用户管理</el-menu-item>
               <el-menu-item index="/role">角色管理</el-menu-item>
               <el-menu-item index="/config">个人中心</el-menu-item>
-            </el-submenu>
+            </el-submenu>-->
 
-            <el-menu-item index="/releaseNews">
+            <el-menu-item index="/frame/releaseNews">
 
               <i class="fa el-icon-message"></i>
               <span>消息管理</span>

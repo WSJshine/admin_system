@@ -40,8 +40,8 @@
           return{
             labelPosition:"top",
             form: {
-              userName:"wangshujun",
-              password:"666666",
+              userName:"",
+              password:"",
             }
           }
       },
@@ -64,7 +64,7 @@
               sessionStorage.setItem('token',res.data.data.token)
               if(res.data.code === 0){
                 that.tips("登录成功","success");
-                that.$router.push({path: "/home"});
+                that.$router.push({path: "/frame"});
               }else{
                 this.tips("warning");
               }

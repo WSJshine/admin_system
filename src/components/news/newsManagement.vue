@@ -21,25 +21,32 @@
       <el-row class="panelArea ">
 
         <el-col :span="18" :offset="1" :md="16" :lg="16" :xs="3" :sm="24">
-
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
-            <el-form-item label="设备名称">
-              <el-input  placeholder="设备名称" v-model="formInline.deviceName" size="small"></el-input>
-            </el-form-item>
-            <el-form-item label="设备状态">
-              <el-select  placeholder="设备状态" v-model="formInline.deviceStatus" size="small">
-                <el-option label="在线" value="1"></el-option>
-                <el-option label="离线" value="0"></el-option>
-              </el-select>
-            </el-form-item>
             <el-form-item label="设备位置">
-              <el-select  placeholder="设备位置" v-model="formInline.deviceTypeString" size="small">
-                <el-option label="智能锁1" value="shanghai"></el-option>
-                <el-option label="智能锁2" value="beijing"></el-option>
-              </el-select>
+              <!--<el-input  placeholder="设备名称" v-model="formInline.deviceName" size="small"></el-input>-->
+              <el-cascader
+                :change-on-select="true"
+                :props="formInline.defaultParams"
+                :options="formInline.options"
+                v-model="formInline.selectedOptions"
+                @change="handelChange"
+                size="small"
+              ></el-cascader>
+            </el-form-item>
+            <el-form-item label="报警时间">
+              <el-date-picker
+                type="datetimerange"
+                v-model="formInline.value2"
+                size="small"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                @change="chooseTimeRange">
+              </el-date-picker>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSubmit"> 查询</el-button>
+              <el-button type="primary" icon="el-icon-search" @click="onSubmit" size="small">搜索</el-button>
             </el-form-item>
           </el-form>
         </el-col>
@@ -50,7 +57,7 @@
               <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
             </el-tooltip>-->
             <el-tooltip content="导出报表" placement="top" >
-              <el-button type="primary" @click="onSubmit"  icon="el-icon-download" size="small" plain ></el-button>
+              <el-button type="primary"  icon="el-icon-download" size="small" plain @click="ExportData"></el-button>
             </el-tooltip>
           </el-col>
 
@@ -67,25 +74,25 @@
             <el-table-column
               width="50"
               type="index"
-              label="序号">
+              label="序号" align="center">
             </el-table-column>
 
             <el-table-column
-              width="150"
+              width="200"
               prop="deviceName"
-              label="设备名称">
+              label="设备名称" align="center">
             </el-table-column>
 
-          <!--  <el-table-column
+            <el-table-column
               prop="deviceTypeString"
               width="120"
-              label="设备类型">
-            </el-table-column>-->
+              label="设备类型" align="center">
+            </el-table-column>
 
             <el-table-column
               prop="deviceStatus"
-              width="90"
-              label="设备状态">
+              width="120"
+              label="设备状态" align="center">
             </el-table-column>
 
            <!-- <el-table-column
@@ -102,20 +109,20 @@
 
             <el-table-column
               prop="position"
-              label="设备位置">
+              label="设备位置" align="center">
             </el-table-column>
 
             <el-table-column
               prop="passwordName"
-              width="120"
-              label="开门时间">
+              width="180"
+              label="开门时间" align="center">
             </el-table-column>
 
             <el-table-column
               align="center"
               fixed="right"
               label="操作"
-              width="100">
+              width="150">
 
               <template slot-scope="scope">
                 <el-button @click="openDialog('edit',scope.row)" type="text" size="small">详情</el-button>
@@ -242,7 +249,7 @@
 </template>
 
 <script>
-/*  import FileSaver from 'file-saver'
+  /*import FileSaver from 'file-saver'
   import XLSX from 'xlsx'*/
 
   export default {
@@ -279,11 +286,24 @@
 
 
 //查询
+
+        //查询
+        vals:[],
         formInline: {
-          deviceName: '',
-          position: '',
-          deviceStatus:''
-        }
+          options:[],
+          selectedOptions: [],
+          defaultParams: {
+            label: 'name',
+            value: 'name',
+            children: 'children'
+          },
+          value2: ''
+        },
+        TimeRange1:[],
+
+
+        //日期
+        value1:''
       }
     },
     methods: {
@@ -431,11 +451,63 @@
               this.loading = false;
             });
             break;
-
         }
       },
+      ExportData() {
+        import("@/vendor/Export2Excel").then(excel => {
+          //表格的表头列表
+          const tHeader = [ "设备名称", "设备类型", "设备状态","设备位置","开门时间"];
+          //与表头相对应的数据里边的字段
+          const filterVal = ['deviceName' ,'deviceTypeString','deviceStatus','position','passwordName'];
+          const list = this.tableData;
+          const data = this.formatJson(filterVal, list);
+          //这里还是使用export_json_to_excel方法比较好，方便操作数据
+          excel.export_json_to_excel(tHeader,data,'天诚智能门锁开门记录');
+        });
+      },
+      formatJson(filterVal, jsonData) {
+        return jsonData.map(v => filterVal.map(j => v[j]))
+      },
 
+      // 从后台获取数据
+      getProductType(){
+        this.$axios({//查看三级查询列表
+          method:'get',
+          url:'/schoolRoom/roomPositionList',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          },
+          params:{
+            pageNum:this.currentPage
+          }
+        } ).then((res) => {
+
+          console.log(res.data.data)
+          this.options=res.data.data;
+          console.log("2222222222222222222222222222");
+          console.log("2222222222222222222222222222");
+          console.log(this.options)
+          console.log("3443535436356346533546576543")
+        })
+      },
+      chooseTimeRange(t) {
+        console.log("输出时间数组");
+        console.log(t);//结果为一个数组，如：["2018-08-04", "2018-08-06"]
+        this.TimeRange1 = t;
+      },
+
+      handelChange(value){
+
+        this.vals=value;
+        console.log(value);
+        console.log(this.vals);
+        console.log(this.vals[0])
+      },
       onSubmit() {
+        console.log("2222222222222222222222222222");
+        console.log("3443535436356346533546576543")
+        console.log(this.vals);
+        console.log(this.vals[0])
         this.$axios({//查询
           method:'get',
           url:'/deviceLock/log/list',
@@ -443,11 +515,13 @@
             'Authorization':'Bearer ' +sessionStorage.getItem("token")
           },
           params:{
-            pageNum:this.currentPage,
-            pageSize:10,
-            deviceName: this.formInline.deviceName,
-            position: this.formInline.position,
-            deviceStatus: this.formInline.deviceStatus
+            buildingType:this.vals[0],
+            buildingName:this.vals[1],
+            floorName:this.vals[2],
+            roomNumber:this.vals[3],
+            beginTime: this.TimeRange1[0],
+            endTime: this.TimeRange1[1],
+            pageNum: this.currentPage,
           }
         } ).then((res) => {
           if (res.data.code === 0) {
@@ -473,60 +547,10 @@
           this.loading = false;
         });
       },
-  /*    exportExcel () {
-        /!* generate workbook object from table *!/
-        debugger;
-        let wb = XLSX.utils.table_to_book(document.querySelector('#tableData'));
-        /!* get binary string as output *!/
-        let wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'array' });
-        try {
-          FileSaver.saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '用户提交返利表.xlsx');
-        } catch (e)
-        {
-          if (typeof console !== 'undefined')
-            console.log(e, wbout)
-        }
-        return wbout
-      }*/
-     /* exportExcel(){
-        this.$axios({//导出报表
-          method:'get',
-          url:'/device/list',
-          headers:{
-            'Authorization':'Bearer ' +sessionStorage.getItem("token")
-          },
-          params:{
-            pageNum:this.currentPage,
-            deviceName: this.formInline.deviceName,
-            position: this.formInline.position,
-            deviceStatus: this.formInline.deviceStatus
-          }
-        } ).then((res) => {
-          if (res.data.code === 0) {
-            let list = res.data.data.list;
-            this.page_total = res.data.data.pageSum;
-            this.tableData = list.map(function (item) {
-              if (item.deviceStatus === 1) {
-                item.deviceStatus = "在线"
-              } else if (item.deviceStatus === 0) {
-                item.deviceStatus = "离线"
-              } else {
-                item.loginTime = "暂无记录";
-              }
-              return item;
-            });
-          } else {
-            this.tips(res.data.message,"warning");
-          }
-          this.loading = false;
-        }).catch((error) => {
-          this.tips( "系统出错！","error");
-          console.log(error);
-          this.loading = false;
-        });
-      }*/
+
     }, created() {
       this.requestApi("getUser");
+      this.getProductType();
     }
   }
 </script>

@@ -28,9 +28,10 @@
             :options="options"
             v-model="selectedOptions"
             @change="handelChange"
+            size="small"
           ></el-cascader>
 
-          <el-button type="primary" icon="el-icon-search" @click="onSubmit">搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="onSubmit" size="small">搜索</el-button>
 
         </el-col>
         <el-col :span="4" :md="4" :lg="4" :xs="24" :sm="24"
@@ -44,6 +45,12 @@
             <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
           </el-tooltip>
 
+          <el-tooltip content="批量删除" placement="top" >
+
+            <el-button type="primary" @click="batchDelete(tableChecked)" icon="el-icon-delete" size="small" plain></el-button>
+
+          </el-tooltip>
+
         </el-col>
 
 
@@ -54,49 +61,56 @@
 
           <el-table
             :data="tableData"
+            @selection-change="handleSelectionChange"
             border
             style="width: 100%">
 
             <el-table-column
+              type="selection"
+              label="全选"
+              width="55">
+            </el-table-column>
+
+            <el-table-column
               width="50"
               type="index"
-              label="序号">
+              label="序号" align="center">
             </el-table-column>
 
             <el-table-column
               prop="buildingName"
-              width="120"
-              label="楼栋名称">
+              width="200"
+              label="楼栋名称" align="center">
             </el-table-column>
 
             <el-table-column
               prop="floorName"
-              width="120"
-              label="楼层">
+              width="150"
+              label="楼层" align="center">
             </el-table-column>
 
             <el-table-column
               prop="roomNumber"
               width="120"
-              label="房间号">
+              label="房间号" align="center">
             </el-table-column>
 
             <el-table-column
               prop="roomCurrentHeadcount"
-              width="90"
-              label="房间人数">
+              width="120"
+              label="房间人数" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceName"
-              label="设备名称">
+              label="设备名称" align="center">
             </el-table-column>
 
 
             <el-table-column
               width="150"
               prop="imei"
-              label="IMEI值">
+              label="IMEI值" align="center">
             </el-table-column>
 
             <el-table-column
@@ -151,7 +165,7 @@
 
 
         <el-form-item label="楼栋类型" :label-width="formLabelWidth" prop="buildingType">
-          <el-select v-model="form_user.buildingType" placeholder="请选择楼栋类型" filterable>
+          <el-select v-model="form_user.buildingType" placeholder="请选择楼栋类型"  @change="selectbuildingType"  filterable allow-create>
             <el-option
               v-for="name in options"
               :key="name.name"
@@ -163,30 +177,36 @@
         </el-form-item>
 
         <el-form-item label="楼栋名称" :label-width="formLabelWidth" prop="buildingName">
-          <el-select v-model="form_user.buildingName" placeholder="请选择楼栋名称" filterable>
-           <!-- <el-option
-              v-for="name in options"
-              :label="name.children[0].name"
-              :value="name.children[0].name">
-            </el-option>-->
-<!--            v-if="options.children.length > 0"-->
-            <el-option label="女生宿舍1号楼" value="1"></el-option>
-            <!--<el-option label="男生宿舍2号楼" value="0"></el-option>-->
+          <el-select v-model="form_user.buildingName" placeholder="请选择楼栋名称"  @change="selectbuildingName"   filterable allow-create>
+            <el-option
+              v-for="(name,index) in one"
+              :label="name.name"
+              :value="name.name"
+              :key="index">
+            </el-option>
           </el-select>
         </el-form-item>
 
 
         <el-form-item label="楼层" :label-width="formLabelWidth" prop="floorName">
-          <el-select v-model="form_user.floorName" placeholder="请选择楼层" filterable>
-            <el-option label="一楼" value="1"></el-option>
-            <el-option label="二楼" value="0"></el-option>
+          <el-select v-model="form_user.floorName" placeholder="请选择楼层"  @change="selectfloorName"   filterable allow-create>
+            <el-option
+              v-for="(name,index) in two"
+              :label="name.name"
+              :value="name.name"
+              :key="index">
+            </el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="房间号" :label-width="formLabelWidth" prop="roomNumber">
-          <el-select v-model="form_user.roomNumber" placeholder="请选择房间号" filterable>
-            <el-option label="301" value="1"></el-option>
-            <el-option label="403" value="0"></el-option>
+          <el-select v-model="form_user.roomNumber" placeholder="请选择房间号"   filterable allow-create >
+            <el-option
+              v-for="(name,index) in three"
+              :label="name.name"
+              :value="name.name"
+              :key="index">
+            </el-option>
           </el-select>
         </el-form-item>
 
@@ -247,6 +267,9 @@
       };
 
       return {
+        one:[],
+        two:[],
+        three:[],
         vals:[],
         loading: true,
         action: "",//当前行为
@@ -506,7 +529,7 @@
                 this.tableData = list.map(function (item) {
                   return item;
                 });
-                this.tips("查看房源列表接口连接成功");
+               // this.tips("查看房源列表接口连接成功");
               } else {
                 this.tips(res.data.message,"warning");
               }
@@ -592,8 +615,75 @@
           console.log(error);
           this.loading = false;
         });
-      }
+      },
+      selectbuildingType(value){
+        for(var i=0;i<this.options.length;i++){
+          if(value === this.options[i].name){
+            this.one = this.options[i].children;
+          }
+        }
+        console.log(this.one)
+      },
+      selectbuildingName(value){
+        for(var i=0;i<this.one.length;i++){
+          if(value === this.one[i].name){
+            this.two = this.one[i].children;
+          }
+        }
+      },
+      selectfloorName(value){
+        for(var i=0;i<this.two.length;i++){
+          if(value === this.two[i].name){
+            this.three = this.two[i].children;
+          }
+        }
+      },
 
+
+
+      handleSelectionChange(val){
+        console.log("handleSelectionChange--",val)
+        this.tableChecked = val
+      },
+      //批量删除
+      batchDelete(rows){
+        console.log(rows);
+        var _this = this;
+        var idsarr = [];
+        _this.$confirm('是否确认此操作?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          rows.forEach(element =>{
+            console.log(element);
+            idsarr.push(element.id)
+
+
+            this.$axios.delete("/schoolRoom", {//删除学校设备
+              params: {
+                ids: element.id
+              },
+              headers: {
+                'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+              }
+            }).then((res) => {
+              if (res.data.code === 0) {
+                this.tips("删除成功！", "success");
+                this.requestApi("getUser")
+              } else {
+                this.tips(res.data.message, "warning");
+                this.tips("删除no成功！");
+              }
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          });
+        });
+      },
     },
     created() {
       this.requestApi("getUser");
