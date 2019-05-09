@@ -33,10 +33,15 @@
               </el-select>
             </el-form-item>
             <el-form-item label="设备位置">
-              <el-select  placeholder="设备位置" v-model="formInline.deviceTypeString" size="small">
-                <el-option label="智能锁1" value="shanghai"></el-option>
-                <el-option label="智能锁2" value="beijing"></el-option>
-              </el-select>
+              <el-cascader
+                :change-on-select="true"
+                :props="formInline.defaultParams"
+                :options="formInline.options"
+                v-model="formInline.selectedOptions"
+                @change="handelChange"
+                size="small"
+                clearable
+              ></el-cascader>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="onSubmit"> 查询</el-button>
@@ -235,7 +240,7 @@
 
 <script>
   export default {
-    name: "building",
+    name: "devicePassword",
     data() {
 
       return {
@@ -268,11 +273,18 @@
 
 
 //查询
+        //查询
+        vals:[],
         formInline: {
-          deviceName: '',
-          position: '',
-          deviceStatus:''
-        }
+          options:[],
+          selectedOptions: [],
+          defaultParams: {
+            label: 'name',
+            value: 'name',
+            children: 'children'
+          },
+
+        },
       }
     },
     methods: {
@@ -423,7 +435,13 @@
 
         }
       },
+      handelChange(value){
 
+        this.vals=value;
+        console.log(value);
+        console.log(this.vals);
+        console.log(this.vals[0])
+      },
       onSubmit() {
         this.$axios({//查询
           method:'get',
@@ -460,9 +478,31 @@
           console.log(error);
           this.loading = false;
         });
-      }
+      },
+      // 从后台获取数据
+      getProductType(){
+        this.$axios({//查看三级查询列表
+          method:'get',
+          url:'/schoolRoom/roomPositionList',
+          headers:{
+            'Authorization':'Bearer ' +sessionStorage.getItem("token")
+          },
+          params:{
+            pageNum:this.currentPage
+          }
+        } ).then((res) => {
+
+          console.log(res.data.data)
+          this.formInline.options=res.data.data;
+          console.log("2222222222222222222222222222");
+          console.log("2222222222222222222222222222");
+          console.log(this.options)
+          console.log("3443535436356346533546576543")
+        })
+      },
     }, created() {
       this.requestApi("getUser");
+      this.getProductType();
     }
   }
 </script>

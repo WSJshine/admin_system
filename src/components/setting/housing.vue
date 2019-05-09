@@ -68,7 +68,7 @@
             <el-table-column
               type="selection"
               label="全选"
-              width="55">
+              width="55"  align="center">
             </el-table-column>
 
             <el-table-column
@@ -304,6 +304,8 @@
         search_select: "deviceName",//搜索框左侧下拉数据
         tableData: [],//表单数据源
 
+        tableChecked:[],//被选中的记录数据。。。对应“批量删除”传的参数值
+        idsarr:[],//批量删除id
 
         options:[],
         selectedOptions: [],
@@ -647,48 +649,57 @@
       },
       //批量删除
       batchDelete(rows){
+        console.log("rows&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
         console.log(rows);
         var _this = this;
         var idsarr = [];
-        _this.$confirm('是否确认此操作?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          rows.forEach(element =>{
-            console.log(element);
-            idsarr.push(element.id)
+        if(rows.length === 0){
+          this.tips("请选择要删除的房源！", "warning");
+        }else{
+            _this.$confirm('是否确认此操作?', '提示', {
+         confirmButtonText: '确定',
+         cancelButtonText: '取消',
+         type: 'warning'
+       }).then(() => {
+         rows.forEach(element =>{
+           console.log(element);
+           idsarr.push(element.id)
 
 
-            this.$axios.delete("/schoolRoom", {//删除学校设备
-              params: {
-                ids: element.id
-              },
-              headers: {
-                'Authorization': 'Bearer ' + sessionStorage.getItem("token")
-              }
-            }).then((res) => {
-              if (res.data.code === 0) {
-                this.tips("删除成功！", "success");
-                this.requestApi("getUser")
-              } else {
-                this.tips(res.data.message, "warning");
-                this.tips("删除no成功！");
-              }
-            })
-          })
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消'
-          });
-        });
+           this.$axios.delete("/schoolRoom", {//删除学校设备
+             params: {
+               ids: element.id
+             },
+             headers: {
+               'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+             }
+           }).then((res) => {
+             if (res.data.code === 0) {
+               this.tips("删除成功！", "success");
+               this.requestApi("getUser")
+             } else {
+               this.tips(res.data.message, "warning");
+               this.tips("删除不成功！");
+             }
+           })
+         })
+       }).catch(() => {
+         this.$message({
+           type: 'info',
+           message: '已取消'
+         });
+       });
+        }
+
       },
     },
     created() {
       this.requestApi("getUser");
       this.getProductType();
-    }
+
+    },
+
+
   }
 </script>
 
@@ -723,5 +734,7 @@
     margin-bottom:-1600px;  /*关键*/
 
   }
+
+
 
 </style>

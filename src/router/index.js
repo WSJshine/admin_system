@@ -4,16 +4,16 @@ import Login from '@/components/user/login'
 import Register from '@/components/user/register'
 import Frame from '@/components/frame'
 import Home from '@/components/home/home'
-import NewsManagement from '@/components/news/newsManagement'
-import ReleaseNews from '@/components/news/releaseNews'
-import SlideshowManagement from '@/components/news/slideshow-management'
-import NewsCatalogue from '@/components/news/newsCatalogue'
-import CommentManagement from '@/components/news/commentsManagement'
+import openDoor from '@/components/news/openDoor'
+import message from '@/components/news/message'
+import teacher from '@/components/news/teacher'
+import alarm from '@/components/news/alarm'
+import student from '@/components/news/student'
 import housing from '@/components/setting/housing'
 
 
-import Building from '@/components/repairs/building'
-import RepairsOrder from '@/components/repairs/repairOrder'
+import devicePassword from '@/components/repairs/devicePassword'
+import device from '@/components/repairs/device'
 
 
 
@@ -27,6 +27,7 @@ import Config from '@/components/setting/config'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -38,43 +39,42 @@ export default new Router({
       name: 'Register',
       component: Register
     },
-    {
+    {/*菜单栏*/
       path: '/frame',
       name: 'Frame',
       component: Frame,
       children: [
-        {path: '/', redirect: 'home'},
-        {
+        {/*首页*/
           path: 'home',
           name: 'Home',
           component: Home
         },
-        {
-          path: 'newsManagement',
-          name: 'newsManagement',
-          component: NewsManagement
+        {/*开门记录*/
+          path: 'openDoor',
+          name: 'openDoor',
+          component: openDoor
+        },
+        {/*消息管理*/
+          path: 'message',
+          name: 'message',
+          component: message
+        },{/*教师*/
+          path: 'teacher',
+          name: 'teacher',
+          component: teacher
+        },
+        {/*报警记录*/
+          path: 'alarm',
+          name: 'alarm',
+          component: alarm
+        },
+        {/*学生*/
+          path: 'student',
+          name: 'student',
+          component:student
         },
         {
-          path: 'releaseNews',
-          name: 'releaseNews',
-          component: ReleaseNews
-        },{
-          path: 'slideshowManagement',
-          name: 'slideshowManagement',
-          component: SlideshowManagement
-        },
-        {
-          path: 'newsType',
-          name: 'newsType',
-          component: NewsCatalogue
-        },
-        {
-          path: 'comments',
-          name: 'comments',
-          component:CommentManagement
-        },
-        {
-
+/*用户管理*/
           path: 'userManagement',
           name: 'userManagement',
           component: UserManagement
@@ -88,19 +88,19 @@ export default new Router({
           path: 'config',
           name: 'config',
           component: Config
-        },{
+        },{/*房源管理*/
           path: 'housing',
           name: 'housing',
           component: housing
-        },{
-          path: 'repairs_building',
-          name: 'repairs_building',
-          component: Building,
+        },{/*设备密码管理*/
+          path: 'devicePassword',
+          name: 'devicePassword',
+          component: devicePassword,
         },
-        {
-          path: 'repairs_order',
-          name: 'repairs_order',
-          component: RepairsOrder,
+        {/*智能锁*/
+          path: 'device',
+          name: 'device',
+          component: device,
         }
 
       ]

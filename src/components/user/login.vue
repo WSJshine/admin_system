@@ -64,7 +64,7 @@
               sessionStorage.setItem('token',res.data.data.token)
               if(res.data.code === 0){
                 that.tips("登录成功","success");
-                that.$router.push({path: "/frame"});
+                that.$router.push({path: "/frame/home"});
               }else{
                 this.tips("warning");
               }

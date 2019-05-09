@@ -1,20 +1,20 @@
 <template>
   <div class="c-main wow fadeIn">
 
-  <!--  <el-row class="topArea wow fadeInDown" data-wow-delay="0.5s">
+    <el-row class="topArea wow fadeInDown" data-wow-delay="0.5s">
       <el-col :span="24">
         <el-breadcrumb separator-class="el-icon-arrow-right">
           <el-breadcrumb-item>报表中心</el-breadcrumb-item>
           <el-breadcrumb-item>开门记录</el-breadcrumb-item>
         </el-breadcrumb>
       </el-col>
-    </el-row>-->
+    </el-row>
 
     <div class="mainBody">
 
       <el-row class="headArea wow fadeInDown panelArea" data-wow-delay="0.3s">
         <el-col :span="24">
-          <span class="title">消息管理</span>
+          <span class="title">开门记录</span>
         </el-col>
       </el-row>
 
@@ -31,9 +31,10 @@
                 v-model="formInline.selectedOptions"
                 @change="handelChange"
                 size="small"
+                clearable
               ></el-cascader>
             </el-form-item>
-            <el-form-item label="报警时间">
+            <el-form-item label="开门时间">
               <el-date-picker
                 type="datetimerange"
                 v-model="formInline.value2"
@@ -51,15 +52,15 @@
           </el-form>
         </el-col>
 
-        <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
-                style="text-align: left;box-sizing: border-box;padding-left: 25px">
-          <!--<el-tooltip content="新增" placement="top">
-            <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
-          </el-tooltip>-->
-          <el-tooltip content="导出报表" placement="top" >
-            <el-button type="primary"  icon="el-icon-download" size="small" plain @click="ExportData"></el-button>
-          </el-tooltip>
-        </el-col>
+          <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
+                  style="text-align: left;box-sizing: border-box;padding-left: 25px">
+            <!--<el-tooltip content="新增" placement="top">
+              <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
+            </el-tooltip>-->
+            <el-tooltip content="导出报表" placement="top" >
+              <el-button type="primary"  icon="el-icon-download" size="small" plain @click="ExportData"></el-button>
+            </el-tooltip>
+          </el-col>
 
 
       </el-row>
@@ -95,17 +96,17 @@
               label="设备状态" align="center">
             </el-table-column>
 
-            <!-- <el-table-column
-               prop="imei"
-               width="150"
-               label="IMEI值">
-             </el-table-column>-->
+           <!-- <el-table-column
+              prop="imei"
+              width="150"
+              label="IMEI值">
+            </el-table-column>-->
 
-            <!--  <el-table-column
-                prop="passwordName"
-                width="120"
-                label="设备密码">
-              </el-table-column>-->
+          <!--  <el-table-column
+              prop="passwordName"
+              width="120"
+              label="设备密码">
+            </el-table-column>-->
 
             <el-table-column
               prop="position"
@@ -253,7 +254,7 @@
   import XLSX from 'xlsx'*/
 
   export default {
-    name: "releaseNews",
+    name: "openDoor",
     data() {
 
       return {
@@ -483,7 +484,7 @@
         } ).then((res) => {
 
           console.log(res.data.data)
-          this.options=res.data.data;
+          this.formInline.options=res.data.data;
           console.log("2222222222222222222222222222");
           console.log("2222222222222222222222222222");
           console.log(this.options)
@@ -563,6 +564,9 @@
 
   .c-main /deep/ .input-with-select .el-input-group__prepend {
     background-color: #fff;
+  }
+  .demo-form-inline{
+    width:120%;
   }
 
 

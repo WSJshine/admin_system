@@ -262,7 +262,7 @@
 
 <script>
   export default {
-    name: "commentsManagement",
+    name: "student",
     data() {
 
 
@@ -313,6 +313,8 @@
 
         tableData: [],//表单数据源
 
+        tableChecked:[],//被选中的记录数据。。。对应“批量删除”传的参数值
+        idsarr:[],//批量删除id
 
 //查询
         formInline: {
@@ -709,7 +711,10 @@
         console.log(rows);
         var _this = this;
         var idsarr = [];
-        _this.$confirm('是否确认此操作?', '提示', {
+        if(rows.length === 0){
+          this.tips("请选择要删除的学生！", "warning");
+        }else{
+           _this.$confirm('是否确认此操作?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -742,6 +747,8 @@
             message: '已取消'
           });
         });
+        }
+
       },
 
     }, created() {

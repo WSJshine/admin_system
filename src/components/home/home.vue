@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="c-main">
+  <div class="c-main" >
     <el-row class="topArea  wow fadeInDown">
       <el-col :span="24">
         <el-breadcrumb separator-class="el-icon-arrow-right">

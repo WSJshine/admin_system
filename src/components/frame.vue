@@ -18,15 +18,17 @@
   <span class="el-dropdown-link">{{this.user.userName}}<i class="el-icon-caret-bottom el-icon--right"></i>
   </span>
               <el-dropdown-menu slot="dropdown">
+
                 <el-dropdown-item>
                   <i class="el-icon-bell"></i> 通知
                   <el-badge class="mark" :value="12"/>
                 </el-dropdown-item>
-                <el-dropdown-item>
 
+                <el-dropdown-item>
                   <i class="el-icon-refresh"></i>
                   刷新
                 </el-dropdown-item>
+
                 <el-dropdown-item>
                   <i class="el-icon-setting"></i>
                   设置
@@ -36,6 +38,7 @@
                   <i class="c-icon-user"></i>
                   <el-button @click="logOff" type="text">退出登录</el-button>
                 </el-dropdown-item>
+
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -68,8 +71,8 @@
                 <i class="fa el-icon-printer"></i>
                 <span>设备管理</span>
               </template>
-              <el-menu-item index="/frame/repairs_order">智能锁</el-menu-item>
-              <el-menu-item index="/frame/repairs_building">设备密码管理</el-menu-item>
+              <el-menu-item index="/frame/device">智能锁</el-menu-item>
+              <el-menu-item index="/frame/devicePassword">设备密码管理</el-menu-item>
             </el-submenu>
 
             <el-submenu index="2">
@@ -82,8 +85,8 @@
               <el-menu-item index="/newsType">新闻分类</el-menu-item>-->
               <!--<el-menu-item index="/comments">评论管理</el-menu-item>-->
               <!--<el-menu-item index="/slideshowManagement">轮播图管理</el-menu-item>-->
-              <el-menu-item index="/frame/newsManagement">开门记录</el-menu-item>
-              <el-menu-item index="/frame/newsType">报警记录</el-menu-item>
+              <el-menu-item index="/frame/openDoor">开门记录</el-menu-item>
+              <el-menu-item index="/frame/alarm">报警记录</el-menu-item>
             </el-submenu>
 
             <el-submenu index="5">
@@ -91,8 +94,8 @@
                 <i class="fa fa-users"></i>
                 <span>人员管理</span>
               </template>
-              <el-menu-item index="/frame/comments">学生</el-menu-item>
-              <el-menu-item index="/frame/slideshowManagement">教师</el-menu-item>
+              <el-menu-item index="/frame/student">学生</el-menu-item>
+              <el-menu-item index="/frame/teacher">教师</el-menu-item>
             </el-submenu>
 
 
@@ -107,7 +110,7 @@
               <el-menu-item index="/config">个人中心</el-menu-item>
             </el-submenu>-->
 
-            <el-menu-item index="/frame/releaseNews">
+            <el-menu-item index="/frame/message">
 
               <i class="fa el-icon-message"></i>
               <span>消息管理</span>
@@ -163,8 +166,9 @@
         this.removeStorage('login');
         this.removeStorage('user');
         this.removeStorage('r');
+        this.removeStorage("token")
         this.tips("注销成功", "success");
-        this.$router.push({path: "/login"});
+        this.$router.push({path: "/"});
       },
 
       getUserInfo() {
