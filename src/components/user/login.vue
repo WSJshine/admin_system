@@ -53,39 +53,23 @@
               userName:this.form.userName,
               password:this.form.password,
             },(res)=>{
-              /*let data = res.data.data;
-              console.log(res.data);
-              window.localStorage["token"]=data.token;
-              console.log(localStorage.getItem('token'));*/
 
-             // this.setStorage("login",this.$base64.encode(res.data.map.token));//获取token
-               that.setStorage("token",this.$base64.encode(res.data.data.token));
 
-              sessionStorage.setItem('token',res.data.data.token)
               if(res.data.code === 0){
+                that.setStorage("token",this.$base64.encode(res.data.data.token));
+
+                sessionStorage.setItem('token',res.data.data.token)
                 that.tips("登录成功","success");
                 that.$router.push({path: "/frame/home"});
               }else{
-                this.tips("warning");
+                this.tips("登录失败,请重新登录");
+                that.$router.push({path: "/"});
               }
 
-             // that.getUserInfo();
+
             });
           },
-      /*  getUserInfo(){
-          let that=this;
-          // var token = that.getStorage("login");
-          //  console.log("###############");
-          // console.log(res.data.data.token);
-           console.log(this.$base64.decode(token));//你这里的token是无效的，所以解密不出来，所以报参数错误，你去找个争取的token或者注释掉frame里面的&&u
-          that.requestApiFnc("/sysUser/login","post",{token:this.$base64.decode(token)},(res)=>{
-            // console.log(res.data);
-          //  let {status,message} = res;
-              if (status === 200){
-                that.$router.push({path: "/home"});
-              }
-            })
-        },*/
+
         register(){
           this.tips("注册还没有做","warning");
         },
@@ -101,11 +85,11 @@
         if(token==null || token=="0"){
           // console.log("没有登录");
         }else {
-          // console.log("已经登录了 直接跳到首页");//
+
           that.$router.replace({name: "Home"});
-        //   this.getUserInfo();
+
         }
-         // this.notify("warning","注意","账号和密码是假数据，直接点击登录即可~~")
+
       }
     }
 </script>

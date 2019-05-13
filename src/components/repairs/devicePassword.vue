@@ -44,18 +44,18 @@
               ></el-cascader>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSubmit"> 查询</el-button>
+              <el-button type="primary" icon="el-icon-search"  @click="onSubmit" size="small"> 搜索</el-button>
             </el-form-item>
           </el-form>
         </el-col>
 
-      <!--  <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
+        <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
                 style="text-align: left;box-sizing: border-box;padding-left: 25px">
-          <el-tooltip content="新增" placement="top">
+          <!--<el-tooltip content="新增" placement="top">
             <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
-          </el-tooltip>
+          </el-tooltip>-->
 
-        </el-col>-->
+        </el-col>
 
 
       </el-row>

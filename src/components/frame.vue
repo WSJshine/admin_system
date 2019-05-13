@@ -99,16 +99,16 @@
             </el-submenu>
 
 
-     <!--       <el-submenu index="6">
+            <el-submenu index="6">
               <template slot="title">
                 <i class="fa fa-cog"></i>
                 <span>系统管理</span>
               </template>
-              &lt;!&ndash;<el-menu-item index="/link">友情链接</el-menu-item>&ndash;&gt;
-              <el-menu-item index="/userManagement">用户管理</el-menu-item>
-              <el-menu-item index="/role">角色管理</el-menu-item>
-              <el-menu-item index="/config">个人中心</el-menu-item>
-            </el-submenu>-->
+              <!--<el-menu-item index="/link">友情链接</el-menu-item>-->
+             <!-- <el-menu-item index="/userManagement">用户管理</el-menu-item>-->
+              <el-menu-item index="/frame/role">角色管理</el-menu-item>
+             <!-- <el-menu-item index="/config">个人中心</el-menu-item>-->
+            </el-submenu>
 
             <el-menu-item index="/frame/message">
 

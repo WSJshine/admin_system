@@ -37,7 +37,7 @@
               <el-input  placeholder="联系方式" v-model="formInline.phoneNumber" size="small"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSubmit"> 查询</el-button>
+              <el-button type="primary" icon="el-icon-search"  @click="onSubmit"  size="small"> 搜索</el-button>
             </el-form-item>
           </el-form>
         </el-col>

@@ -26,8 +26,8 @@
             </el-form-item>
             <el-form-item label="设备类型">
               <el-select  placeholder="设备类型" v-model="formInline.deviceTypeString" size="small">
-                <el-option label="智能锁1" value="shanghai"></el-option>
-                <el-option label="智能锁2" value="beijing"></el-option>
+                <el-option label="智能锁" value="shanghai"></el-option>
+                <!--<el-option label="智能锁2" value="beijing"></el-option>-->
               </el-select>
             </el-form-item>
             <el-form-item label="设备状态">
@@ -37,7 +37,7 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSubmit"> 查询</el-button>
+              <el-button type="primary" icon="el-icon-search"  @click="onSubmit"  size="small"> 搜索</el-button>
             </el-form-item>
           </el-form>
         </el-col>

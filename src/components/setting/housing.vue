@@ -35,7 +35,7 @@
 
         </el-col>
         <el-col :span="4" :md="4" :lg="4" :xs="24" :sm="24"
-                style="text-align: left;box-sizing: border-box;padding-left: 25px">
+                style="text-align: left;box-sizing: border-box;padding-left: 2%">
           <el-tooltip content="刷新" placement="top">
             <el-button type="primary" icon="el-icon-refresh" @click="refresh" size="small"
                        plain></el-button>
@@ -63,52 +63,54 @@
             :data="tableData"
             @selection-change="handleSelectionChange"
             border
-            style="width: 100%">
+            style="width: 100%" >
 
             <el-table-column
               type="selection"
               label="全选"
-              width="55"  align="center">
+              style="width: 10%"  align="center">
             </el-table-column>
 
             <el-table-column
-              width="50"
+              style="width: 10%"
               type="index"
               label="序号" align="center">
             </el-table-column>
 
             <el-table-column
               prop="buildingName"
-              width="200"
+              style="width: 15%"
               label="楼栋名称" align="center">
             </el-table-column>
 
             <el-table-column
               prop="floorName"
-              width="150"
+              style="width: 10%"
               label="楼层" align="center">
             </el-table-column>
 
             <el-table-column
               prop="roomNumber"
-              width="120"
+              style="width: 10%"
               label="房间号" align="center">
             </el-table-column>
 
             <el-table-column
               prop="roomCurrentHeadcount"
-              width="120"
+              style="width: 10%"
               label="房间人数" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceName"
-              label="设备名称" align="center">
+              label="设备名称"
+              style="width: 15%"
+              align="center">
             </el-table-column>
 
 
             <el-table-column
-              width="150"
+              style="width: 10%"
               prop="imei"
               label="IMEI值" align="center">
             </el-table-column>
@@ -117,7 +119,7 @@
               align="center"
               fixed="right"
               label="操作"
-              width="100">
+              style="width: 10%">
 
               <template slot-scope="scope">
                 <el-button @click="openDialog('edit',scope.row)" type="text" size="small">编辑</el-button>

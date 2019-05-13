@@ -1,4 +1,4 @@
-﻿<template>
+﻿﻿<template>
   <div class="c-main" >
     <el-row class="topArea  wow fadeInDown">
       <el-col :span="24">
@@ -13,20 +13,20 @@
 
     <el-row class="dataVisualization  panelArea">
       <el-col class="dataVisualization_item dataVisualization_item1 wow fadeInLeft" :span="6" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <div class="card"><h3>设备数量<br/> <b>{{this.deviceNumber}}</b><img src="../../assets/other-img/shebei@2x.png" height="50" width="50" class="img1"/></h3>
+        <div class="card"><h3> {{this.deviceNumber}}<br/> <b>设备数量</b><img src="../../assets/other-img/shebei@2x.png" class="img1"/></h3>
         </div>
       </el-col>
 
       <el-col class="dataVisualization_item dataVisualization_item2 wow fadeInLeft" :span="6" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <div class="card"><h3>房源总数<br/> <b>{{this.roomTotal}}</b><img src="../../assets/other-img/fangyuan@2x.png" height="50" width="50" class="img1"/></h3>
+        <div class="card"><h3>{{this.roomTotal}}<br/> <b>房源总数 </b><img src="../../assets/other-img/fangyuan@2x.png"  class="img1"/></h3>
         </div>
       </el-col>
       <el-col class="dataVisualization_item dataVisualization_item3 wow fadeInRight" :span="6" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <div class="card"><h3>管理员人数<br/><b>{{this.adminTotal}}</b><img src="../../assets/other-img/kongzhi@2x.png" height="50" width="50" class="img1"/></h3>
+        <div class="card"><h3>{{this.adminTotal}}<br/><b>管理员人数</b><img src="../../assets/other-img/kongzhi@2x.png" class="img1"/></h3>
         </div>
       </el-col>
       <el-col class="dataVisualization_item dataVisualization_item4 wow fadeInRight" :span="6" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
-        <div class="card"><h3>用户总数<br/><b>{{this.userTotal}}</b><img src="../../assets/other-img/yonghu@2x.png" height="50" width="50" class="img1"/></h3>
+        <div class="card"><h3>{{this.userTotal}}<br/><b>用户总数</b><img src="../../assets/other-img/yonghu@2x.png"class="img1"/></h3>
         </div>
       </el-col>
     </el-row>
@@ -34,13 +34,13 @@
     <el-row class="chartArea  panelArea" :span="24">
 
       <el-col class="chart" :span="12">
-        <div id="chart" style="height: 380px;width: 90%" class="grid-content"></div>
+        <div id="chart" style="height: 300px;width: 90%" class="grid-content"></div>
       </el-col>
       <el-col class="chart" :span="6">
-        <div id="chart1" style="height: 380px;width: 90%" class="grid-content"></div>
+        <div id="chart1" style="height: 300px;width: 90%" class="grid-content"></div>
       </el-col>
       <el-col class="chart" :span="6">
-        <div id="chart2" style="height: 380px;width: 90%" class="grid-content"></div>
+        <div id="chart2" style="height: 300px;width: 90%" class="grid-content"></div>
       </el-col>
       <el-col class="chart" :span="24">
         <div id="chart3" style="height: 600px;width: 100%" class="grid-content"></div>
@@ -145,6 +145,10 @@
           },
           color:['#00c6a5','#397bff'],
           tooltip: {},
+          grid:{
+            height:180
+          },
+
           dataset: {
             dimensions: ['product', '已处理', '未处理'],
             source: [
@@ -161,15 +165,23 @@
             ]
           },
           xAxis: {
+            show: true,  // 是否显示
             type: 'category',
             name:'日期'
           },
           yAxis: {
-            name:'个数'
+            show: true,
+            name:'个数',
+
           },
           // Declare several bar series, each will be mapped
           // to a column of dataset.source by default.
-          title: {text: '报修处理情况统计（近十天）'},
+          title: {
+            text: '报修处理情况统计（近十天）',
+            textStyle: {//主标题文本样式{"fontSize": 18,"fontWeight": "bolder","color": "#333"}
+              fontSize: 15,
+            },
+          },
           series: [
             {type: 'bar'},
             {type: 'bar'},
@@ -181,8 +193,7 @@
             var dataObj = [];
             console.log(todayAlarmTotal);
             for(var i=0;i<todayAlarmTotal.length;i++) {
-              // dataarra.push(todayAlarmTotal[i].alarmDeviceTypeString);
-              // dataarrb.push(todayAlarmTotal[i].number);
+
               var dataobj = {};
               dataName.push(todayAlarmTotal[i].alarmDeviceTypeString);
               dataobj.name = todayAlarmTotal[i].alarmDeviceTypeString;
@@ -196,18 +207,25 @@
                   trigger: 'item',
                   formatter: "{a} <br/>{b}: {c} ({d}%)"
                 },
+
                 legend: {
                   orient: 'vertical',
                   x: 'right',
                   data: dataName
                 },
+
                 color: ['#3f78f6', '#00e498', '#ff5756', '#ffb000', "#7940f4"],
-                title: {text: '当日报警统计'},
+                title: {
+                  text: '当日报警统计',
+                  textStyle: {//主标题文本样式{"fontSize": 18,"fontWeight": "bolder","color": "#333"}
+                    fontSize: 15,
+                  },
+                },
                 series: [
                   {
                     name: '访问来源',
                     type: 'pie',
-                    radius: ['50%', '70%'],
+                    radius: ['40%', '55%'],
                     avoidLabelOverlap: false,
                     label: {
                       normal: {
@@ -217,7 +235,7 @@
                       emphasis: {
                         show: true,
                         textStyle: {
-                          fontSize: '30',
+                          fontSize: '25',
                           fontWeight: 'bold'
                         }
                       }
@@ -245,12 +263,18 @@
             data:['故障设备','正常设备']
           },
           color:['#d3dcff','#91a7fd'],
-          title: {text: '设备故障报警'},
+
+          title: {
+            text: '设备故障报警',
+            textStyle: {//主标题文本样式{"fontSize": 18,"fontWeight": "bolder","color": "#333"}
+              fontSize: 15,
+            },
+          },
           series: [
             {
               name:'访问来源',
               type:'pie',
-              radius: ['50%', '70%'],
+              radius: ['40%', '55%'],
               avoidLabelOverlap: false,
               label: {
                 normal: {
@@ -260,7 +284,7 @@
                 emphasis: {
                   show: true,
                   textStyle: {
-                    fontSize: '30',
+                    fontSize: '25',
                     fontWeight: 'bold'
                   }
                 }
@@ -296,10 +320,6 @@
           title: {text: '当日时分段进出次数趋势图'},
           series: [{
             data: dataarr,
-              // [
-              // todayOpenLockCount[j].count
-              //["","",""]以前是这样写死的
-              // ],
             type: 'line',
             areaStyle: {},
             smooth:true
@@ -308,8 +328,6 @@
             color: 'rgba(255,0,0,0.5)'
           }
          })
-
-
 
           } else {
             this.tips(res.data.message,"warning");
@@ -361,21 +379,26 @@
 
       .dataVisualization_item {
         padding: 15px 15px;
+
         .card {
           position: relative;
           box-sizing: border-box;
           padding: 5px;
           background-color: $baseColor1;
-          border-radius: 3px;
+          border-radius: 5px;
           cursor: pointer;
+
           h3 {
             font-weight: lighter;
+            font-size: 35px;
             color: white;
             padding: 2px;
+            padding-left: 20px;
             b {
               font-weight: bold;
-              font-size: 45px;
-              padding: 0 10px;
+              font-size: 20px;
+             /* padding:  10px;*/
+
             }
             span {
               font-size: 12px;
@@ -450,7 +473,13 @@
     }
 
     .img1{
-      padding-left: 70px;
+      position: absolute;
+      right: 20px;
+     /* padding-left: 70px;*/
+    /*  <!--padding-top: -90px;-->*/
+      margin-top: -30px;
+      height:64px;
+      width:64px
     }
 
   }
