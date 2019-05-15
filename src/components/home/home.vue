@@ -1,4 +1,4 @@
-﻿﻿<template>
+﻿<template>
   <div class="c-main" >
     <el-row class="topArea  wow fadeInDown">
       <el-col :span="24">

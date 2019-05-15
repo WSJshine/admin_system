@@ -23,7 +23,6 @@
         <el-col :span="18" :offset="1" :md="16" :lg="16" :xs="3" :sm="24">
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
             <el-form-item label="设备位置">
-              <!--<el-input  placeholder="设备名称" v-model="formInline.deviceName" size="small"></el-input>-->
               <el-cascader
                 :change-on-select="true"
                 :props="formInline.defaultParams"
@@ -54,9 +53,6 @@
 
           <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
                   style="text-align: left;box-sizing: border-box;padding-left: 25px">
-            <!--<el-tooltip content="新增" placement="top">
-              <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
-            </el-tooltip>-->
             <el-tooltip content="导出报表" placement="top" >
               <el-button type="primary"  icon="el-icon-download" size="small" plain @click="ExportData"></el-button>
             </el-tooltip>
@@ -73,49 +69,39 @@
             style="width: 100%">
 
             <el-table-column
-              width="50"
+              style="width: 10%"
               type="index"
               label="序号" align="center">
             </el-table-column>
 
             <el-table-column
-              width="200"
+              style="width: 20%"
               prop="deviceName"
               label="设备名称" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceTypeString"
-              width="120"
+              style="width: 10%"
               label="设备类型" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceStatus"
-              width="120"
+              style="width: 10%"
               label="设备状态" align="center">
             </el-table-column>
 
-           <!-- <el-table-column
-              prop="imei"
-              width="150"
-              label="IMEI值">
-            </el-table-column>-->
-
-          <!--  <el-table-column
-              prop="passwordName"
-              width="120"
-              label="设备密码">
-            </el-table-column>-->
 
             <el-table-column
               prop="position"
+              style="width: 20%"
               label="设备位置" align="center">
             </el-table-column>
 
             <el-table-column
               prop="passwordName"
-              width="180"
+              style="width: 20%"
               label="开门时间" align="center">
             </el-table-column>
 
@@ -123,11 +109,10 @@
               align="center"
               fixed="right"
               label="操作"
-              width="150">
+              style="width: 10%">
 
               <template slot-scope="scope">
                 <el-button @click="openDialog('edit',scope.row)" type="text" size="small">详情</el-button>
-                <!--<el-button type="text" size="small" @click="openDialog('delete',scope.row)">删除</el-button>-->
               </template>
             </el-table-column>
           </el-table>
@@ -426,12 +411,13 @@
                 'Authorization':'Bearer ' +sessionStorage.getItem("token")
               },
               params:{
-                pageNum:this.currentPage
+                pageNum:this.currentPage,
+                pageSize:this.page_size,
               }
             } ).then((res) => {
               if (res.data.code === 0) {
                 let list = res.data.data.list;
-                this.page_total = res.data.data.pageSum;
+                this.page_total = res.data.data.pageTotal;
                 this.tableData = list.map(function (item) {
                   if (item.deviceStatus === 1) {
                     item.deviceStatus = "在线"
@@ -523,11 +509,12 @@
             beginTime: this.TimeRange1[0],
             endTime: this.TimeRange1[1],
             pageNum: this.currentPage,
+            pageSize:this.page_size
           }
         } ).then((res) => {
           if (res.data.code === 0) {
             let list = res.data.data.list;
-            this.page_total = res.data.data.pageSum;
+            this.page_total = res.data.data.pageTotal;
             this.tableData = list.map(function (item) {
               if (item.deviceStatus === 1) {
                 item.deviceStatus = "在线"

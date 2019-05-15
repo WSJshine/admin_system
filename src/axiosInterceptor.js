@@ -33,7 +33,7 @@ http.interceptors.request.use(function (config) {
     //检测请求是不是登录接口
     if (config.url.indexOf("login" ) !== -1  ) {
       // console.log("没有登录");
-      router.push({path: "/login"});
+      router.push({path: "/"});
 
     } else {
 

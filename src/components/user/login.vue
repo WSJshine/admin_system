@@ -9,12 +9,12 @@
   <el-form :label-position="labelPosition" label-width="80px" :model="form" >
     <el-form-item label="">
       <el-input v-model="form.userName" placeholder="请输入用户名">
-        <template slot="prepend"><img src="../../assets/other-img/yonghudl@2x.png"  width="28px" height="28px"></template>
+        <template slot="prepend"><img src="../../assets/other-img/yonghudl@2x.png"  width="25px" height="25px"></template>
       </el-input>
     </el-form-item>
     <el-form-item label="">
       <el-input type="password" v-model="form.password" placeholder="请输入密码">
-        <template slot="prepend"><img src="../../assets/other-img/mima@2x.png"  width="28px" height="28px"></template>
+        <template slot="prepend"><img src="../../assets/other-img/mima@2x.png"  width="25px" height="25px"></template>
       </el-input>
     </el-form-item>
     <el-form-item  label="" class="mima">
@@ -189,7 +189,7 @@
     font-family: "Microsoft YaHei";
     font-size: 13px;
     color: #3f7bf6;
-    margin-left: 120px;
+    padding-left: 30%;
   }
   .denglu{
     width: 300px;

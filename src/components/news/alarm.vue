@@ -72,7 +72,7 @@
             style="width: 100%">
 
             <el-table-column
-              width="50"
+              style="width: 10%"
               type="index"
               label="序号"
               align="center">
@@ -81,40 +81,41 @@
             <el-table-column
               prop="deviceName"
               label="设备名称"
-              width="200"
+              style="width: 10%"
               align="center">
             </el-table-column>
 
             <el-table-column
               prop="devicePosition"
               label="设备位置"
+              style="width: 20%"
               align="center">
             </el-table-column>
 
             <el-table-column
               prop="alarmDeviceTypeString"
-              width="120"
+              style="width: 10%"
               label="报警类型"
               align="center">
             </el-table-column>
 
             <el-table-column
               prop="createTime"
-              width="180"
+              style="width: 20%"
               label="报警时间"
               align="center">
             </el-table-column>
 
             <el-table-column
               prop="handlerId"
-              width="120"
+              style="width: 10%"
               label="处理人员"
               align="center">
             </el-table-column>
 
             <el-table-column
               prop="handleStatusString"
-              width="120"
+              style="width: 10%"
               label="处理情况"
               align="center">
             </el-table-column>
@@ -123,7 +124,7 @@
               align="center"
               fixed="right"
               label="操作"
-              width="100">
+              style="width: 10%">
 
               <template slot-scope="scope">
                 <el-button @click="openDialog('edit',scope.row)" type="text" size="small">详情</el-button>
@@ -150,17 +151,7 @@
 
     </div>
 
-  <!--  <el-dialog
-      :append-to-body="true"
-      title="删除设备"
-      :visible.sync="dialogVisible"
-      width="30%">
-      <span>{{this.dialogText}}</span>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogConfirm('cancel')">取 消</el-button>
-    <el-button type="primary" @click="dialogConfirm('confirm')">确 定</el-button>
-  </span>
-    </el-dialog>-->
+
 
 
     <el-dialog :append-to-body="true" :title="this.dialogText" @close="closeUserDialog" :visible.sync="dialogFormNew">
@@ -464,12 +455,13 @@ vals:[],
                 'Authorization':'Bearer ' +sessionStorage.getItem("token")
               },
               params:{
-                pageNum:this.currentPage
+                pageNum:this.currentPage,
+                pageSize:this.page_size
               }
             } ).then((res) => {
               if (res.data.code === 0) {
                 let list = res.data.data.list;
-                this.page_total = res.data.data.pageSum;
+                this.page_total = res.data.data.pageTotal;
                 this.tableData = list.map(function (item) {
                   if (item.createTime === 1) {
                     item.createTime = "在线"
@@ -549,6 +541,7 @@ vals:[],
           },
           params:{
             pageNum:this.currentPage,
+            pageSize:this.page_size,
             deviceName: this.formInline.deviceName,
             alarmDeviceTypeString: this.formInline.alarmDeviceTypeString,
             beginTime: this.TimeRange1[0],
@@ -557,7 +550,7 @@ vals:[],
         } ).then((res) => {
           if (res.data.code === 0) {
             let list = res.data.data.list;
-            this.page_total = res.data.data.pageSum;
+            this.page_total = res.data.data.pageTotal;
             this.tableData = list.map(function (item) {
               if (item.createTime === 1) {
                 item.createTime = "在线"

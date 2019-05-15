@@ -36,6 +36,17 @@
                 <el-option label="离线" value="0"></el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="设备位置">
+              <el-cascader
+                :change-on-select="true"
+                :props="defaultParams"
+                :options="options"
+                v-model="selectedOptions"
+                @change="handelChange"
+                size="small"
+                clearable
+              ></el-cascader>
+            </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="el-icon-search"  @click="onSubmit"  size="small"> 搜索</el-button>
             </el-form-item>
@@ -68,47 +79,48 @@
             <el-table-column
               type="selection"
               label="全选"
-              width="55">
+              style="width: 10%">
             </el-table-column>
 
             <el-table-column
-              width="50"
+              style="width: 10%"
               type="index"
               label="序号" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceName"
-              width="200"
+              style="width: 15%"
               label="设备名称" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceTypeString"
-              width="120"
+              style="width: 10%"
               label="设备类型" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceStatus"
-              width="90"
+              style="width: 10%"
               label="设备状态" align="center">
             </el-table-column>
 
             <el-table-column
               prop="batteryLevel"
-              width="120"
+              style="width: 10%"
               label="电池电量" align="center">
             </el-table-column>
 
             <el-table-column
               prop="signalLevel"
-              width="120"
+              style="width: 10%"
               label="信号强度" align="center">
             </el-table-column>
 
             <el-table-column
               prop="position"
+              style="width: 15%"
               label="设备位置" align="center">
             </el-table-column>
 
@@ -116,7 +128,7 @@
               align="center"
               fixed="right"
               label="操作"
-              width="100">
+              style="width: 10%">
 
               <template slot-scope="scope">
                 <el-button @click="openDialog('edit',scope.row)" type="text" size="small">编辑</el-button>
@@ -581,12 +593,13 @@
                 'Authorization':'Bearer ' +sessionStorage.getItem("token")
               },
               params:{
-                pageNum:this.currentPage
+                pageNum:this.currentPage,
+                pageSize:this.page_size
               }
             } ).then((res) => {
               if (res.data.code === 0) {
                 let list = res.data.data.list;
-                this.page_total = res.data.data.pageSum;
+                this.page_total = res.data.data.pageTotal;
                 this.tableData = list.map(function (item) {
                   if (item.deviceStatus === 1) {
                     item.deviceStatus = "在线"
@@ -666,6 +679,7 @@
           },
           params:{
             pageNum:this.currentPage,
+            pageSize:this.page_size,
             deviceName: this.formInline.deviceName,
             deviceTypeString: this.formInline.deviceTypeString,
             deviceStatus: this.formInline.deviceStatus
@@ -673,7 +687,7 @@
         } ).then((res) => {
           if (res.data.code === 0) {
             let list = res.data.data.list;
-            this.page_total = res.data.data.pageSum;
+            this.page_total = res.data.data.pageTotal;
             this.tableData = list.map(function (item) {
               if (item.deviceStatus === 1) {
                 item.deviceStatus = "在线"
@@ -797,9 +811,11 @@
         }
       },
 
-    }, created() {
+    },
+    created() {
+
       this.requestApi("getUser");
-     // this.getProductType();
+      this.getProductType();
     }
   }
 </script>

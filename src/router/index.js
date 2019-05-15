@@ -21,7 +21,7 @@ import UserManagement from '@/components/user/userManagement'
 
 
 
-import Role from '@/components/user/role'
+import Role from '@/components/setting/role'
 
 
 Vue.use(Router)

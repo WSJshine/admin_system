@@ -68,43 +68,44 @@
             style="width: 100%">
 
             <el-table-column
-              width="50"
+              style="width: 10%"
               type="index"
               label="序号" align="center">
             </el-table-column>
 
             <el-table-column
-              width="200"
+              style="width: 15%"
               prop="deviceName"
               label="设备名称" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceTypeString"
-              width="120"
+              style="width: 10%"
               label="设备类型" align="center">
             </el-table-column>
 
             <el-table-column
               prop="deviceStatus"
-              width="120"
+              style="width: 10%"
               label="设备状态" align="center">
             </el-table-column>
 
             <el-table-column
               prop="imei"
-              width="200"
+              style="width: 15%"
               label="IMEI值" align="center">
             </el-table-column>
 
             <el-table-column
               prop="passwordName"
-              width="150"
+              style="width: 10%"
               label="设备密码" align="center">
             </el-table-column>
 
             <el-table-column
               prop="position"
+              style="width: 20%"
               label="设备位置" align="center">
             </el-table-column>
 
@@ -112,7 +113,7 @@
               align="center"
               fixed="right"
               label="操作"
-              width="100">
+              style="width: 10%">
 
               <template slot-scope="scope">
                 <el-button @click="openDialog('edit',scope.row)" type="text" size="small">详情</el-button>
@@ -406,12 +407,13 @@
                 'Authorization':'Bearer ' +sessionStorage.getItem("token")
               },
               params:{
-                pageNum:this.currentPage
+                pageNum:this.currentPage,
+                pageSize:this.page_size,
               }
             } ).then((res) => {
               if (res.data.code === 0) {
                 let list = res.data.data.list;
-                this.page_total = res.data.data.pageSum;
+                this.page_total = res.data.data.pageTotal;
                 this.tableData = list.map(function (item) {
                   if (item.deviceStatus === 1) {
                     item.deviceStatus = "在线"
@@ -445,12 +447,13 @@
       onSubmit() {
         this.$axios({//查询
           method:'get',
-          url:'/device/list',
+          url:'/devicePassword/list',
           headers:{
             'Authorization':'Bearer ' +sessionStorage.getItem("token")
           },
           params:{
             pageNum:this.currentPage,
+            pageSize:this.page_size,
             deviceName: this.formInline.deviceName,
             position: this.formInline.position,
             deviceStatus: this.formInline.deviceStatus
@@ -458,7 +461,7 @@
         } ).then((res) => {
           if (res.data.code === 0) {
             let list = res.data.data.list;
-            this.page_total = res.data.data.pageSum;
+            this.page_total = res.data.data.pageTotal;
             this.tableData = list.map(function (item) {
               if (item.deviceStatus === 1) {
                 item.deviceStatus = "在线"

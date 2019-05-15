@@ -24,7 +24,7 @@
 
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
             <el-form-item label="姓名">
-              <el-input  placeholder="姓名" v-model="formInline.name" size="small"></el-input>
+              <el-input  placeholder="姓名" v-model="formInline.name" size="small" style="width: 100px"></el-input>
             </el-form-item>
             <el-form-item label="性别">
               <el-select  placeholder="性别" v-model="formInline.gender" size="small">
@@ -34,7 +34,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="联系方式">
-              <el-input  placeholder="联系方式" v-model="formInline.phoneNumber" size="small"></el-input>
+              <el-input  placeholder="联系方式" v-model="formInline.phoneNumber" size="small" style="width: 100px"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="el-icon-search"  @click="onSubmit"  size="small"> 搜索</el-button>
@@ -42,7 +42,7 @@
           </el-form>
         </el-col>
 
-        <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
+        <el-col :span="4" :offset="1" :md="4" :lg="4" :xs="4" :sm="4"
                 style="text-align: left;box-sizing: border-box;padding-left: 25px">
           <el-tooltip content="新增" placement="top">
             <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
@@ -71,17 +71,19 @@
             <el-table-column
               type="selection"
               label="全选"
-              width="55">
+              style="width: 10%"
+              align="center">
             </el-table-column>
 
             <el-table-column
-              width="50"
+              style="width: 10%"
+              align="center"
               type="index"
               label="序号">
             </el-table-column>
 
             <el-table-column
-              label="头像" align="center" width="180">
+              label="头像" align="center"  style="width: 10%">
               <template slot-scope="scope">
                 <img :src="scope.row.avatarUrl" width="40" height="40" class="head_pic"/>
               </template>
@@ -89,43 +91,44 @@
 
             <el-table-column
               prop="name"
-              label="姓名" align="center" width="150">
+              label="姓名" align="center"  style="width: 10%">
             </el-table-column>
 
             <el-table-column
               prop="gender"
-              width="120"
+              style="width: 10%"
               label="性别" align="center">
             </el-table-column>
 
             <el-table-column
               prop="age"
-              width="90"
+              style="width: 10%"
               label="年龄" align="center">
             </el-table-column>
 
             <el-table-column
-              width="150"
+              style="width: 10%"
               prop="position"
               label="职位" align="center">
             </el-table-column>
 
             <el-table-column
               prop="phoneNumber"
-              width="180"
+              style="width: 10%"
               label="联系方式" align="center">
             </el-table-column>
 
             <el-table-column
               prop="schoolAddress"
-              label="宿舍号" align="center">
+              label="宿舍号" align="center"
+              style="width: 10%">
             </el-table-column>
 
             <el-table-column
               align="center"
               fixed="right"
               label="操作"
-              width="100">
+              style="width: 10%">
 
               <template slot-scope="scope">
                 <el-button @click="openDialog('edit',scope.row)" type="text" size="small">编辑</el-button>
@@ -217,6 +220,7 @@
               :options="options"
               v-model="selectedOptions"
               @change="handelChange"
+              clearable
             ></el-cascader>
           </el-row>
         </el-form-item>
@@ -552,12 +556,13 @@
                 'Authorization':'Bearer ' +sessionStorage.getItem("token")
               },
               params:{
-                pageNum:this.currentPage
+                pageNum:this.currentPage,
+                pageSize:this.page_size,
               }
             } ).then((res) => {
               if (res.data.code === 0) {
                 let list = res.data.data.list;
-                this.page_total = res.data.data.pageSum;
+                this.page_total = res.data.data.pageTotal;
                 this.tableData = list.map(function (item) {
                   if (item.gender === 1) {
                     item.gender = "男"
@@ -591,6 +596,7 @@
           },
           params:{
             pageNum:this.currentPage,
+            pageSize:this.page_size,
             name: this.formInline.name,
             gender: this.formInline.gender,
             phoneNumber: this.formInline.phoneNumber
@@ -598,7 +604,7 @@
         } ).then((res) => {
           if (res.data.code === 0) {
             let list = res.data.data.list;
-            this.page_total = res.data.data.pageSum;
+            this.page_total = res.data.data.pageTotal;
             this.tableData = list.map(function (item) {
               if (item.gender === 1) {
                 item.gender = "男"

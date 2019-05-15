@@ -22,6 +22,8 @@ import {axiosHttp} from "./axiosInterceptor";
 
 import 'font-awesome/scss/font-awesome.scss'
 
+import 'lib-flexible/flexible'
+
 Vue.use(mavonEditor)
 Vue.use(publicFunction);
 Vue.use(Vuex);

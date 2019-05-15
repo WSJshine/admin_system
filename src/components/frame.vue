@@ -3,7 +3,7 @@
     <el-container class="frame-wrapper">
       <el-header class="frame-header">
         <div class="left wow fadeInLeft">
-          <div class="logo"><img src="../assets/logo.png" alt="logo"/></div>
+          <div class="logo"><img src="https://prod-read.oss-cn-shanghai.aliyuncs.com/img/2019-05-15/1557901195230.png" alt="logo"/></div>
           <el-tooltip class="item" effect="dark" content="点击这里可以展开和收起侧栏菜单~" manual value placement="right-start">
             <el-button style="margin-left: 20px;font-weight: bold" type="text" size="mini" @click="toggleNav"
                        icon="el-icon-menu">切换菜单
@@ -13,7 +13,7 @@
         <div class="right clearfix wow fadeInRight">
           <div class="time hidden-sm-and-down">{{nowTime}}</div>
           <div class="userInfo">
-            <div class="avatar"><img src="../assets/other-img/avatar.jpg" height="45" width="45"/></div>
+            <div class="avatar"><img src="https://prod-read.oss-cn-shanghai.aliyuncs.com/img/2019-05-15/1557901370116.jpg" height="45" width="45"/></div>
             <el-dropdown trigger="click">
   <span class="el-dropdown-link">{{this.user.userName}}<i class="el-icon-caret-bottom el-icon--right"></i>
   </span>

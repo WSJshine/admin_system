@@ -18,9 +18,9 @@
         </el-col>
       </el-row>
 
-      <el-row class="panelArea ">
+      <el-row class="panelArea " >
 
-        <el-col :span="8" :offset="12" :md="8" :lg="8" :xs="24" :sm="24">
+        <el-col :span="18" :offset="1" :md="16" :lg="16" :xs="3" :sm="24">
 
           <el-cascader
             :change-on-select="true"
@@ -29,13 +29,14 @@
             v-model="selectedOptions"
             @change="handelChange"
             size="small"
+            clearable
           ></el-cascader>
 
           <el-button type="primary" icon="el-icon-search" @click="onSubmit" size="small">搜索</el-button>
 
         </el-col>
-        <el-col :span="4" :md="4" :lg="4" :xs="24" :sm="24"
-                style="text-align: left;box-sizing: border-box;padding-left: 2%">
+        <el-col :span="4" :offset="3" :md="4" :lg="4" :xs="24" :sm="24"
+                style="text-align: left;box-sizing: border-box;padding-left: -2%">
           <el-tooltip content="刷新" placement="top">
             <el-button type="primary" icon="el-icon-refresh" @click="refresh" size="small"
                        plain></el-button>
@@ -524,12 +525,13 @@
                 'Authorization':'Bearer ' +sessionStorage.getItem("token")
               },
               params:{
-                pageNum:this.currentPage
+                pageNum:this.currentPage,
+                pageSize:this.page_size
               }
             } ).then((res) => {
               if (res.status === 200) {
                 let list = res.data.data.list;
-                this.page_total = res.data.data.pageSum;
+                this.page_total = res.data.data.pageTotal;
                 this.tableData = list.map(function (item) {
                   return item;
                 });
@@ -595,11 +597,12 @@
             floorName:this.vals[2],
             roomNumber:this.vals[3],
             pageNum: this.currentPage,
+            pageSize:this.page_size
           }
         } ).then((res) => {
           if (res.data.code === 0) {
             let list = res.data.data.list;
-            this.page_total = res.data.data.pageSum;
+            this.page_total = res.data.data.pageTotal;
             this.tableData = list.map(function (item) {
               if (item.deviceStatus === 1) {
                 item.deviceStatus = "在线"
@@ -699,13 +702,13 @@
       this.requestApi("getUser");
       this.getProductType();
 
-    },
+    }
 
 
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" scoped media="screen">
   .c-main /deep/ .el-select .el-input {
     width: 120px;
     text-align: center;
@@ -737,6 +740,12 @@
 
   }
 
+/*  !*分辨率低于1280，采用下面的样式*!
+  @media screen and (max-device-width:1280px){
+    .lala{
+      width: 100%;
+    }
+  }*/
 
 
 </style>
