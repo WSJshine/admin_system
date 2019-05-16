@@ -517,6 +517,7 @@
               this.requestApi("search");//如果搜索框内有参数， 就执行搜索 接口
               return;
             }
+
             this.loading = true;
             this.$axios({//查看房源列表
               method:'get',

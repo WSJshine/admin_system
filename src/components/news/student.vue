@@ -176,6 +176,7 @@
       <el-form :model="form_user" ref="userForm" :rules="formRulers" size="small" enctype="multipart/form-data">
 
         <el-form-item label="头像" :label-width="formLabelWidth" prop="avatarUrl">
+
           <el-upload
             class="avatar-uploader"
             action="https://api.tcsmart.com.cn/api/school/web/file"

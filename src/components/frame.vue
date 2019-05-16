@@ -19,20 +19,20 @@
   </span>
               <el-dropdown-menu slot="dropdown">
 
-                <el-dropdown-item>
+                <!--<el-dropdown-item>
                   <i class="el-icon-bell"></i> 通知
                   <el-badge class="mark" :value="12"/>
-                </el-dropdown-item>
+                </el-dropdown-item>-->
 
-                <el-dropdown-item>
+                <!--<el-dropdown-item>
                   <i class="el-icon-refresh"></i>
                   刷新
-                </el-dropdown-item>
+                </el-dropdown-item>-->
 
-                <el-dropdown-item>
+                <!--<el-dropdown-item>
                   <i class="el-icon-setting"></i>
                   设置
-                </el-dropdown-item>
+                </el-dropdown-item>-->
 
                 <el-dropdown-item>
                   <i class="c-icon-user"></i>
