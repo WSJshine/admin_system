@@ -43,7 +43,7 @@
         </el-col>
 
         <el-col :span="4" :offset="1" :md="4" :lg="4" :xs="4" :sm="4"
-                style="text-align: left;box-sizing: border-box;padding-left: 25px">
+                style="text-align: left;box-sizing: border-box;">
           <el-tooltip content="新增" placement="top">
             <el-button type="primary" @click="openDialog('add')" icon="el-icon-plus" size="small" plain></el-button>
           </el-tooltip>
@@ -52,9 +52,9 @@
             <el-button type="primary" @click="batchDelete(tableChecked)" icon="el-icon-delete" size="small" plain></el-button>
 
           </el-tooltip>
-          <el-tooltip content="导出报表" placement="top">
-            <el-button type="primary"  icon="el-icon-download" size="small" plain></el-button>
-          </el-tooltip>
+          <!-- <el-tooltip content="导出报表" placement="top">
+             <el-button type="primary"  icon="el-icon-download" size="small" plain></el-button>
+           </el-tooltip>-->
         </el-col>
 
 
@@ -83,7 +83,7 @@
             </el-table-column>
 
             <el-table-column
-              label="头像" align="center"  style="width: 10%">
+              label="头像" align="center" style="width: 10%">
               <template slot-scope="scope">
                 <img :src="scope.row.avatarUrl" width="40" height="40" class="head_pic"/>
               </template>
@@ -91,7 +91,7 @@
 
             <el-table-column
               prop="name"
-              label="姓名" align="center"  style="width: 10%">
+              label="姓名" align="center" style="width: 10%">
             </el-table-column>
 
             <el-table-column
@@ -120,8 +120,9 @@
 
             <el-table-column
               prop="schoolAddress"
-              label="宿舍号" align="center"
-              style="width: 10%">
+              label="宿舍号"
+              style="width: 10%"
+              align="center">
             </el-table-column>
 
             <el-table-column
@@ -175,13 +176,14 @@
       <el-form :model="form_user" ref="userForm" :rules="formRulers" size="small" enctype="multipart/form-data">
 
         <el-form-item label="头像" :label-width="formLabelWidth" prop="avatarUrl">
+
           <el-upload
             class="avatar-uploader"
-            action="http://101.132.70.78:9001/api/web/school/file"
+            action="https://api.tcsmart.com.cn/api/school/web/file"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload">
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <img v-if="form_user.avatarUrl" :src="form_user.avatarUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
 
@@ -280,8 +282,7 @@
 
       return {
         iurl:'',
-        imageUrl: '',
-        avatarUrl:'',//头像地址
+
 
         loading: true,
         action: "",//当前行为
@@ -307,7 +308,8 @@
           position: "",
           remarks: "",
           imei: "",
-          file:""
+          file:"",
+          avatarUrl:'',//头像地址
         },//新增 和 编辑 的数据
 
         dialogText: "",
@@ -485,7 +487,7 @@
                 }
               }).then((res) => {
                 if (res.data.code === 0) {
-                  this.tips( res.data.message,"success")
+                  this.tips( res.data.message,"success");
                   this.requestApi("getUser");
                 } else {
                   this.tips( res.data.message,"warning")
@@ -499,6 +501,8 @@
 
             break;
           case "edit":
+            console.log("%^%^%^%^%%%%^^^^^^^^^^^^^^^^^^^^");
+            let that = this;
             this.$axios.put("/schoolBasicPersonnelInfo", {
                 avatarUrl:that.imgId.fileUrlPath,
                 id: this.id,
@@ -627,7 +631,7 @@
       },
 //头像上传
       handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+        this.form_user.avatarUrl = URL.createObjectURL(file.raw);
       },
       beforeAvatarUpload(file) { //上传前的函数
         //上传前对图片类型和大小进行判断
@@ -718,41 +722,41 @@
         var _this = this;
         var idsarr = [];
         if(rows.length === 0){
-          this.tips("请选择要删除的教师！", "warning");
+          this.tips("请选择要删除的学生！", "warning");
         }else{
-           _this.$confirm('是否确认此操作?', '提示', {
-         confirmButtonText: '确定',
-         cancelButtonText: '取消',
-         type: 'warning'
-       }).then(() => {
-         rows.forEach(element =>{
-           console.log(element);
-           idsarr.push(element.id)
+          _this.$confirm('是否确认此操作?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            rows.forEach(element =>{
+              console.log(element);
+              idsarr.push(element.id)
 
 
-           this.$axios.delete("/schoolBasicPersonnelInfo", {//删除学生
-             params: {
-               ids: element.id
-             },
-             headers: {
-               'Authorization': 'Bearer ' + sessionStorage.getItem("token")
-             }
-           }).then((res) => {
-             if (res.data.code === 0) {
-               this.tips("删除成功！", "success");
-               this.requestApi("getUser")
-             } else {
-               this.tips(res.data.message, "warning");
-               this.tips("删除no成功！");
-             }
-           })
-         })
-       }).catch(() => {
-         this.$message({
-           type: 'info',
-           message: '已取消'
-         });
-       });
+              this.$axios.delete("/schoolBasicPersonnelInfo", {//删除学生
+                params: {
+                  ids: element.id
+                },
+                headers: {
+                  'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+                }
+              }).then((res) => {
+                if (res.data.code === 0) {
+                  this.tips("删除成功！", "success");
+                  this.requestApi("getUser")
+                } else {
+                  this.tips(res.data.message, "warning");
+                  this.tips("删除no成功！");
+                }
+              })
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消'
+            });
+          });
         }
 
       },

@@ -52,9 +52,9 @@
             <el-button type="primary" @click="batchDelete(tableChecked)" icon="el-icon-delete" size="small" plain></el-button>
 
           </el-tooltip>
-          <el-tooltip content="导出报表" placement="top">
+         <!-- <el-tooltip content="导出报表" placement="top">
             <el-button type="primary"  icon="el-icon-download" size="small" plain></el-button>
-          </el-tooltip>
+          </el-tooltip>-->
         </el-col>
 
 
@@ -183,7 +183,7 @@
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload">
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <img v-if="form_user.avatarUrl" :src="form_user.avatarUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
 
@@ -282,8 +282,7 @@
 
       return {
         iurl:'',
-        imageUrl: '',
-        avatarUrl:'',//头像地址
+
 
         loading: true,
         action: "",//当前行为
@@ -309,7 +308,8 @@
           position: "",
           remarks: "",
           imei: "",
-          file:""
+          file:"",
+          avatarUrl:'',//头像地址
         },//新增 和 编辑 的数据
 
         dialogText: "",
@@ -631,7 +631,7 @@
       },
 //头像上传
       handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+        this.form_user.avatarUrl = URL.createObjectURL(file.raw);
       },
       beforeAvatarUpload(file) { //上传前的函数
         //上传前对图片类型和大小进行判断

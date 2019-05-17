@@ -235,10 +235,10 @@
         </el-form-item>
 
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <!--<div slot="footer" class="dialog-footer">
         <el-button @click="dialogConfirm('cancel')">取 消</el-button>
         <el-button type="primary" @click="dialogConfirm('confirm')">确 定</el-button>
-      </div>
+      </div>-->
     </el-dialog>
 
   </div>
@@ -353,7 +353,7 @@
             this.form_user.createTime = "0"
           }
           this.form_user.imei = "";
-          this.dialogText = "编辑设备信息";
+          this.dialogText = "查看详细信息";
           this.dialogFormNew = true;
         }
       },

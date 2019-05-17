@@ -23,9 +23,11 @@ http.interceptors.request.use(function (config) {
 
   console.log(config);
 
-  let token = localStorage.getItem("login");  //从缓存中取token
+    let token = localStorage.getItem("login");  //从缓存中取token
+  // let token = sessionStorage.getItem("token");//从缓存中取token
   if (token) {
-    config.headers.Authorization = Base64.decode(JSON.parse(token));   //将token放到请求头发送给服务器
+  config.headers.Authorization = Base64.decode(JSON.parse(token));   //将token放到请求头发送给服务器
+    //  config.headers.Authorization = token;   //将token放到请求头发送给服务器
   } else {
 
     console.log(config.url)

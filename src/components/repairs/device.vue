@@ -119,7 +119,7 @@
             </el-table-column>
 
             <el-table-column
-              prop="position"
+              prop="devicePosition"
               style="width: 15%"
               label="设备位置" align="center">
             </el-table-column>
@@ -542,7 +542,7 @@
                 deviceTypeString: this.form_user.deviceTypeString,
                 signalLevel: this.form_user.signalLevel,
                 batteryLevel: this.form_user.batteryLevel,
-                position: this.form_user.position,
+                devicePosition: this.form_user.devicePosition,
                 remarks: this.form_user.remarks,
                 deviceStatus: this.form_user.deviceStatus,
               },

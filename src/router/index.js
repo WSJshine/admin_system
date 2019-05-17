@@ -21,13 +21,13 @@ import UserManagement from '@/components/user/userManagement'
 
 
 
-import Role from '@/components/setting/role'
+import Role from '@/components/user/role'
 
 
 Vue.use(Router)
 
 export default new Router({
-  mode: 'history',
+ // mode: 'history',
   routes: [
     {
       path: '/',

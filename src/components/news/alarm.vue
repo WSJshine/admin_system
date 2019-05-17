@@ -100,7 +100,7 @@
             </el-table-column>
 
             <el-table-column
-              prop="createTime"
+              prop="alarmTime"
               style="width: 20%"
               label="报警时间"
               align="center">
@@ -172,13 +172,13 @@
           </el-row>
         </el-form-item>
 
-        <el-form-item label="电池电量" :label-width="formLabelWidth" prop="batteryLevel">
+        <!--<el-form-item label="电池电量" :label-width="formLabelWidth" prop="batteryLevel">
           <el-row>
             <el-col :span="12">
               <el-input v-model="form_user.batteryLevel" auto-complete="off" :disabled="true"></el-input>
             </el-col>
           </el-row>
-        </el-form-item>
+        </el-form-item>-->
 
         <el-form-item label="设备状态" :label-width="formLabelWidth">
           <el-select v-model="form_user.deviceStatus" placeholder="请选择状态">
@@ -211,10 +211,10 @@
           </el-row>
         </el-form-item>
 
-        <el-form-item label="报警时间" :label-width="formLabelWidth" prop="createTime">
+        <el-form-item label="报警时间" :label-width="formLabelWidth" prop="alarmTime">
           <el-row>
             <el-col :span="12">
-              <el-input v-model="form_user.createTime" auto-complete="off" :disabled="true" ></el-input>
+              <el-input v-model="form_user.alarmTime" auto-complete="off" :disabled="true" ></el-input>
             </el-col>
           </el-row>
         </el-form-item>
@@ -236,10 +236,10 @@
         </el-form-item>
 
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <!--<div slot="footer" class="dialog-footer">
         <el-button @click="dialogConfirm('cancel')">取 消</el-button>
         <el-button type="primary" @click="dialogConfirm('confirm')">确 定</el-button>
-      </div>
+      </div>-->
     </el-dialog>
 
   </div>
@@ -265,7 +265,7 @@
           handleStatusString: "",
           alarmDeviceTypeString: "",
           handlerId: "",
-          createTime: "1",
+          alarmTime: "1",
           devicePosition: "",
           imei: "",
         },//新增 和 编辑 的数据
@@ -335,7 +335,7 @@ vals:[],
             handleStatusString: "",
             alarmDeviceTypeString: "",
             handlerId: "",
-            createTime: "1",
+            alarmTime: "1",
             position: "",
             remarks: "",
             imei: "",
@@ -348,13 +348,13 @@ vals:[],
               this.form_user[item] = data[item];
             }
           }
-          if (this.form_user.createTime === "在线") {
-            this.form_user.createTime = "1"
-          } else if (this.form_user.createTime === "离线") {
-            this.form_user.createTime = "0"
-          }
+         /* if (this.form_user.alarmTime === "在线") {
+            this.form_user.alarmTime = "1"
+          } else if (this.form_user.alarmTime === "离线") {
+            this.form_user.alarmTime = "0"
+          }*/
           this.form_user.imei = "";
-          this.dialogText = "编辑设备信息";
+          this.dialogText = "查看设备报警信息";
           this.dialogFormNew = true;
         }
       },
@@ -424,7 +424,7 @@ vals:[],
                 handleStatusString: this.form_user.handleStatusString,
                 handlerId: this.form_user.handlerId,
                 devicePosition: this.form_user.devicePosition,
-                createTime: this.form_user.createTime,
+                alarmTime: this.form_user.alarmTime,
               },
               {
                 headers:{
@@ -463,13 +463,13 @@ vals:[],
                 let list = res.data.data.list;
                 this.page_total = res.data.data.pageTotal;
                 this.tableData = list.map(function (item) {
-                  if (item.createTime === 1) {
-                    item.createTime = "在线"
-                  } else if (item.createTime === 0) {
-                    item.createTime = "离线"
+                 /* if (item.alarmTime === 1) {
+                    item.alarmTime = "在线"
+                  } else if (item.alarmTime === 0) {
+                    item.alarmTime = "离线"
                   } else {
                     item.loginTime = "暂无记录";
-                  }
+                  }*/
                   return item;
                 });
               } else {
@@ -512,11 +512,11 @@ vals:[],
                 let _this = this;
                 this.tableData = list.map(function (item) {
 
-                  if (item.createTime === 1) {
-                    item.createTime = "在线"
-                  } else if (item.createTime === 0) {
-                    item.createTime = "离线"
-                  }
+                 /* if (item.alarmTime === 1) {
+                    item.alarmTime = "在线"
+                  } else if (item.alarmTime === 0) {
+                    item.alarmTime = "离线"
+                  }*/
                   return item;
                 });
               } else if (res.data.code === 500) {
@@ -532,6 +532,13 @@ vals:[],
         }
       },
 
+      handelChange(value){
+
+        this.vals=value;
+        console.log(value);
+        console.log(this.vals);
+        console.log(this.vals[0])
+      },
       onSubmit() {
         this.$axios({//查询
           method:'get',
@@ -542,8 +549,12 @@ vals:[],
           params:{
             pageNum:this.currentPage,
             pageSize:this.page_size,
-            deviceName: this.formInline.deviceName,
-            alarmDeviceTypeString: this.formInline.alarmDeviceTypeString,
+            /*deviceName: this.formInline.deviceName,
+            alarmDeviceTypeString: this.formInline.alarmDeviceTypeString,*/
+            buildingType:this.vals[0],
+            buildingName:this.vals[1],
+            floorName:this.vals[2],
+            roomNumber:this.vals[3],
             beginTime: this.TimeRange1[0],
             endTime: this.TimeRange1[1]
           }
@@ -552,13 +563,13 @@ vals:[],
             let list = res.data.data.list;
             this.page_total = res.data.data.pageTotal;
             this.tableData = list.map(function (item) {
-              if (item.createTime === 1) {
-                item.createTime = "在线"
-              } else if (item.createTime === 0) {
-                item.createTime = "离线"
+             /* if (item.alarmTime === 1) {
+                item.alarmTime = "在线"
+              } else if (item.alarmTime === 0) {
+                item.alarmTime = "离线"
               } else {
                 item.loginTime = "暂无记录";
-              }
+              }*/
               return item;
             });
           } else {
@@ -578,13 +589,6 @@ vals:[],
       },
 
 
-      handelChange(value){
-
-        this.vals=value;
-        console.log(value);
-        console.log(this.vals);
-        console.log(this.vals[0])
-      },
       // 从后台获取数据
       getProductType(){
         this.$axios({//查看三级查询列表
@@ -612,7 +616,7 @@ vals:[],
           //表格的表头列表
           const tHeader = ["设备名称", "设备位置", "报警类型","报警时间","处理人员","处理情况"];
           //与表头相对应的数据里边的字段
-          const filterVal = ['deviceName' ,'devicePosition','alarmDeviceTypeString','createTime','handlerId','handleStatusString'];
+          const filterVal = ['deviceName' ,'devicePosition','alarmDeviceTypeString','alarmTime','handlerId','handleStatusString'];
           const list = this.tableData;
           const data = this.formatJson(filterVal, list);
           //这里还是使用export_json_to_excel方法比较好，方便操作数据

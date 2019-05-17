@@ -168,7 +168,7 @@
 
 
         <el-form-item label="楼栋类型" :label-width="formLabelWidth" prop="buildingType">
-          <el-select v-model="form_user.buildingType" placeholder="请选择楼栋类型"  @change="selectbuildingType"  filterable allow-create>
+          <el-select v-model="form_user.buildingType" placeholder="请选择楼栋类型"  @change="selectbuildingType"  filterable  clearable allow-create>
             <el-option
               v-for="name in options"
               :key="name.name"
@@ -180,7 +180,7 @@
         </el-form-item>
 
         <el-form-item label="楼栋名称" :label-width="formLabelWidth" prop="buildingName">
-          <el-select v-model="form_user.buildingName" placeholder="请选择楼栋名称"  @change="selectbuildingName"   filterable allow-create>
+          <el-select v-model="form_user.buildingName" placeholder="请选择楼栋名称"  @change="selectbuildingName"   filterable clearable allow-create>
             <el-option
               v-for="(name,index) in one"
               :label="name.name"
@@ -192,7 +192,7 @@
 
 
         <el-form-item label="楼层" :label-width="formLabelWidth" prop="floorName">
-          <el-select v-model="form_user.floorName" placeholder="请选择楼层"  @change="selectfloorName"   filterable allow-create>
+          <el-select v-model="form_user.floorName" placeholder="请选择楼层"  @change="selectfloorName"   filterable  clearable allow-create>
             <el-option
               v-for="(name,index) in two"
               :label="name.name"
@@ -203,7 +203,7 @@
         </el-form-item>
 
         <el-form-item label="房间号" :label-width="formLabelWidth" prop="roomNumber">
-          <el-select v-model="form_user.roomNumber" placeholder="请选择房间号"   filterable allow-create >
+          <el-select v-model="form_user.roomNumber" placeholder="请选择房间号"   filterable  clearable allow-create >
             <el-option
               v-for="(name,index) in three"
               :label="name.name"
@@ -351,7 +351,7 @@
           this.action = "delete";
           this.id = data.id;
           this.dialogVisible = true;
-          this.dialogText = "确认删除该设备吗？"
+          this.dialogText = "确认删除该房源吗？"
         } else if (type === 'add') {
           this.id = "";
           this.action = "add";
@@ -494,7 +494,7 @@
             });
             break;
           case "delete":
-            this.$axios.delete("/schoolRoom", {//删除学校设备
+            this.$axios.delete("/schoolRoom", {//删除房源
               params: {
                 ids: this.id
               },
@@ -517,35 +517,40 @@
               this.requestApi("search");//如果搜索框内有参数， 就执行搜索 接口
               return;
             }
+            if (sessionStorage.getItem("token") === null){
+              that.$router.push({path: "/"});
+            }
+            else{
+              this.loading = true;
+              this.$axios({//查看房源列表
+                method:'get',
+                url:'/schoolRoom/list',
+                headers:{
+                  'Authorization':'Bearer ' +sessionStorage.getItem("token")
+                },
+                params:{
+                  pageNum:this.currentPage,
+                  pageSize:this.page_size
+                }
+              } ).then((res) => {
+                if (res.status === 200) {
+                  let list = res.data.data.list;
+                  this.page_total = res.data.data.pageTotal;
+                  this.tableData = list.map(function (item) {
+                    return item;
+                  });
+                  // this.tips("查看房源列表接口连接成功");
+                } else {
+                  this.tips(res.data.message,"warning");
+                }
+                this.loading = false;
+              }).catch((error) => {
+                this.tips( "系统出错！","error");
+                console.log(error);
+                this.loading = false;
+              });
+            }
 
-            this.loading = true;
-            this.$axios({//查看房源列表
-              method:'get',
-              url:'/schoolRoom/list',
-              headers:{
-                'Authorization':'Bearer ' +sessionStorage.getItem("token")
-              },
-              params:{
-                pageNum:this.currentPage,
-                pageSize:this.page_size
-              }
-            } ).then((res) => {
-              if (res.status === 200) {
-                let list = res.data.data.list;
-                this.page_total = res.data.data.pageTotal;
-                this.tableData = list.map(function (item) {
-                  return item;
-                });
-               // this.tips("查看房源列表接口连接成功");
-              } else {
-                this.tips(res.data.message,"warning");
-              }
-              this.loading = false;
-            }).catch((error) => {
-              this.tips( "系统出错！","error");
-              console.log(error);
-              this.loading = false;
-            });
             break;
 
 

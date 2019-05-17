@@ -94,13 +94,13 @@
 
 
             <el-table-column
-              prop="position"
+              prop="devicePosition"
               style="width: 20%"
               label="设备位置" align="center">
             </el-table-column>
 
             <el-table-column
-              prop="passwordName"
+              prop="createTime"
               style="width: 20%"
               label="开门时间" align="center">
             </el-table-column>
@@ -226,7 +226,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <!--  <el-button @click="dialogConfirm('cancel')">取 消</el-button>-->
-        <el-button type="primary" @click="dialogConfirm('confirm')">确 定</el-button>
+       <!-- <el-button type="primary" @click="dialogConfirm('confirm')">确 定</el-button>-->
       </div>
     </el-dialog>
 
@@ -332,7 +332,7 @@
           } else if (this.form_user.deviceStatus === "离线") {
             this.form_user.deviceStatus = "0"
           }
-          this.dialogText = "查看设备信息";
+          this.dialogText = "查看设备开门记录";
           this.dialogFormNew = true;
         }
       },
@@ -377,7 +377,7 @@
                 deviceTypeString: this.form_user.deviceTypeString,
                 passwordName: this.form_user.passwordName,
                 batteryLevel: this.form_user.batteryLevel,
-                position: this.form_user.position,
+                devicePosition: this.form_user.devicePosition,
                 remarks: this.form_user.remarks,
                 deviceStatus: this.form_user.deviceStatus,
               },
@@ -404,9 +404,9 @@
             }
             this.loading = true;
 
-            this.$axios({//查看学校设备列表
+            this.$axios({//查看学校设备开门记录
               method:'get',
-              url:'/device/list',
+              url:'/deviceLock/log/list',
               headers:{
                 'Authorization':'Bearer ' +sessionStorage.getItem("token")
               },
@@ -445,7 +445,7 @@
           //表格的表头列表
           const tHeader = [ "设备名称", "设备类型", "设备状态","设备位置","开门时间"];
           //与表头相对应的数据里边的字段
-          const filterVal = ['deviceName' ,'deviceTypeString','deviceStatus','position','passwordName'];
+          const filterVal = ['deviceName' ,'deviceTypeString','deviceStatus','devicePosition','createTime'];
           const list = this.tableData;
           const data = this.formatJson(filterVal, list);
           //这里还是使用export_json_to_excel方法比较好，方便操作数据

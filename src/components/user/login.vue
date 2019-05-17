@@ -56,7 +56,7 @@
 
 
               if(res.data.code === 0){
-                that.setStorage("token",this.$base64.encode(res.data.data.token));
+              //  that.setStorage("token",this.$base64.encode(res.data.data.token));
 
                 sessionStorage.setItem('token',res.data.data.token)
                 that.tips("登录成功","success");

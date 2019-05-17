@@ -104,7 +104,7 @@
             </el-table-column>
 
             <el-table-column
-              prop="position"
+              prop="devicePosition"
               style="width: 20%"
               label="设备位置" align="center">
             </el-table-column>
@@ -455,8 +455,12 @@
             pageNum:this.currentPage,
             pageSize:this.page_size,
             deviceName: this.formInline.deviceName,
-            position: this.formInline.position,
-            deviceStatus: this.formInline.deviceStatus
+            devicePosition: this.formInline.devicePosition,
+            deviceStatus: this.formInline.deviceStatus,
+            buildingType:this.vals[0],
+            buildingName:this.vals[1],
+            floorName:this.vals[2],
+            roomNumber:this.vals[3],
           }
         } ).then((res) => {
           if (res.data.code === 0) {
