@@ -481,6 +481,7 @@
                   position: this.form_user.position,//职位
                   remarks: this.form_user.remarks,//备注
                   age: this.form_user.age,//年龄
+                  schoolAddressRoomId:this.vals[3],
                 },
                 headers:{
                   'Authorization':'Bearer ' +sessionStorage.getItem("token")
@@ -513,6 +514,7 @@
                 position: this.form_user.position,//职位
                 remarks: this.form_user.remarks,//备注
                 age: this.form_user.age,//年龄
+                schoolAddressRoomId:this.vals[3],
               },
               {
                 headers:{
@@ -567,16 +569,22 @@
               if (res.data.code === 0) {
                 let list = res.data.data.list;
                 this.page_total = res.data.data.pageTotal;
-                this.tableData = list.map(function (item) {
-                  if (item.gender === 1) {
-                    item.gender = "男"
-                  } else if (item.gender === 2) {
-                    item.gender = "女"
-                  } else {
-                    item.gender = "未知";
-                  }
-                  return item;
-                });
+                if(list === null){
+                  this.tips("暂无数据");
+                  this.tableData = null;
+                }else{
+                  this.tableData = list.map(function (item) {
+                    if (item.gender === 1) {
+                      item.gender = "男"
+                    } else if (item.gender === 2) {
+                      item.gender = "女"
+                    } else {
+                      item.gender = "未知";
+                    }
+                    return item;
+                  });
+                }
+
               } else {
                 this.tips(res.data.message,"warning");
               }
@@ -609,16 +617,22 @@
           if (res.data.code === 0) {
             let list = res.data.data.list;
             this.page_total = res.data.data.pageTotal;
-            this.tableData = list.map(function (item) {
-              if (item.gender === 1) {
-                item.gender = "男"
-              } else if (item.gender === 2) {
-                item.gender = "女"
-              } else {
-                item.gender = "未知";
-              }
-              return item;
-            });
+            if(list === null){
+              this.tips("暂无数据");
+              this.tableData = null;
+            }else{
+              this.tableData = list.map(function (item) {
+                if (item.gender === 1) {
+                  item.gender = "男"
+                } else if (item.gender === 2) {
+                  item.gender = "女"
+                } else {
+                  item.gender = "未知";
+                }
+                return item;
+              });
+            }
+
           } else {
             this.tips(res.data.message,"warning");
           }
@@ -707,7 +721,9 @@
         this.vals=value;
         console.log(value);
         console.log(this.vals);
+        console.log("3333333333333333333");
         console.log(this.vals[3])
+        console.log("3333333333333333333");
 
       },
 

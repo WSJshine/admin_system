@@ -641,13 +641,7 @@
            return;
             }
             this.loading = true;
-            // this.$axios.get("/user/getAll?pageNum=" + this.currentPage + "&pageSize=" + this.page_size).then((res) => {
-            /*this.$axios.get("/user/getAll",{
-              params:{
-                pageNum:this.currentPage,
-                pageSize:this.page_size,
-              }
-            })*/
+
             this.$axios({//查看学校设备列表
               method:'get',
               url:'/device/list',
@@ -655,7 +649,8 @@
                 'Authorization':'Bearer ' +sessionStorage.getItem("token")
               },
               params:{
-                pageNum:this.currentPage
+                pageNum:this.currentPage,
+                pageSize:this.page_size
               }
             } ).then((res) => {
 
@@ -672,12 +667,7 @@
                   } else if (item.status === 0) {
                     item.status = "封禁"
                   }
-                  /*item.createDate = _this.showTime(item.createDate);
-                  if (item.loginTime) {
-                    item.loginTime = _this.showTime(item.loginTime);
-                  } else {
-                    item.loginTime = "暂无记录";
-                  }*/
+
                   return item;
 
                 });

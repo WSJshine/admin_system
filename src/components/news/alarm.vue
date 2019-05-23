@@ -100,7 +100,7 @@
             </el-table-column>
 
             <el-table-column
-              prop="alarmTime"
+              prop="createTime"
               style="width: 20%"
               label="报警时间"
               align="center">
@@ -462,16 +462,21 @@ vals:[],
               if (res.data.code === 0) {
                 let list = res.data.data.list;
                 this.page_total = res.data.data.pageTotal;
-                this.tableData = list.map(function (item) {
-                 /* if (item.alarmTime === 1) {
-                    item.alarmTime = "在线"
-                  } else if (item.alarmTime === 0) {
-                    item.alarmTime = "离线"
-                  } else {
-                    item.loginTime = "暂无记录";
-                  }*/
-                  return item;
-                });
+                if(list === null){
+                  this.tips("暂无数据");
+                  this.tableData = null;
+                }else{
+                  this.tableData = list.map(function (item) {
+                    if (item.deviceStatus === 1) {
+                      item.deviceStatus = "在线"
+                    } else if (item.deviceStatus === 0) {
+                      item.deviceStatus = "离线"
+                    } else {
+                      item.loginTime = "暂无记录";
+                    }
+                    return item;
+                  });
+                }
               } else {
                 this.tips(res.data.message,"warning");
               }
@@ -562,16 +567,21 @@ vals:[],
           if (res.data.code === 0) {
             let list = res.data.data.list;
             this.page_total = res.data.data.pageTotal;
-            this.tableData = list.map(function (item) {
-             /* if (item.alarmTime === 1) {
-                item.alarmTime = "在线"
-              } else if (item.alarmTime === 0) {
-                item.alarmTime = "离线"
-              } else {
-                item.loginTime = "暂无记录";
-              }*/
-              return item;
-            });
+            if(list === null){
+              this.tips("暂无数据");
+              this.tableData = null;
+            }else{
+              this.tableData = list.map(function (item) {
+                if (item.deviceStatus === 1) {
+                  item.deviceStatus = "在线"
+                } else if (item.deviceStatus === 0) {
+                  item.deviceStatus = "离线"
+                } else {
+                  item.loginTime = "暂无记录";
+                }
+                return item;
+              });
+            }
           } else {
             this.tips(res.data.message,"warning");
           }

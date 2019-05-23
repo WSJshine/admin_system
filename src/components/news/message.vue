@@ -461,16 +461,22 @@
               if (res.data.code === 0) {
                 let list = res.data.data.list;
                 this.page_total = res.data.data.pageTotal;
-                this.tableData = list.map(function (item) {
-                  if (item.createTime === 1) {
-                    item.createTime = "在线"
-                  } else if (item.createTime === 0) {
-                    item.createTime = "离线"
-                  } else {
-                    item.loginTime = "暂无记录";
-                  }
-                  return item;
-                });
+                if(list === null){
+                  this.tips("暂无数据");
+                  this.tableData = null;
+                }else{
+                  this.tableData = list.map(function (item) {
+                    if (item.createTime === 1) {
+                      item.createTime = "在线"
+                    } else if (item.createTime === 0) {
+                      item.createTime = "离线"
+                    } else {
+                      item.loginTime = "暂无记录";
+                    }
+                    return item;
+                  });
+                }
+
               } else {
                 this.tips(res.data.message,"warning");
               }
@@ -550,16 +556,22 @@
           if (res.data.code === 0) {
             let list = res.data.data.list;
             this.page_total = res.data.data.pageTotal;
-            this.tableData = list.map(function (item) {
-              if (item.createTime === 1) {
-                item.createTime = "在线"
-              } else if (item.createTime === 0) {
-                item.createTime = "离线"
-              } else {
-                item.loginTime = "暂无记录";
-              }
-              return item;
-            });
+            if(list === null){
+              this.tips("暂无数据");
+              this.tableData = null;
+            }else{
+              this.tableData = list.map(function (item) {
+                if (item.createTime === 1) {
+                  item.createTime = "在线"
+                } else if (item.createTime === 0) {
+                  item.createTime = "离线"
+                } else {
+                  item.loginTime = "暂无记录";
+                }
+                return item;
+              });
+            }
+
           } else {
             this.tips(res.data.message,"warning");
           }

@@ -128,7 +128,7 @@
           }
         } ).then((res) => {
           if (res.data.code === 0) {
-            this.tips("连接成功");
+            /*this.tips("连接成功");*/
             this.adminTotal=res.data.data.adminTotal;
             this.deviceNumber=res.data.data.deviceNumber;
             this.roomTotal=res.data.data.roomTotal;

@@ -41,33 +41,22 @@
             <el-table-column
 
               type="index"
-              label="ID"
-              width="50">
+              label="序号"
+              style="width: 15%"
+              align="center">
             </el-table-column>
-            <el-table-column
 
+            <el-table-column
               prop="roleName"
-              width="150"
-              label="角色名">
-            </el-table-column>
-            <el-table-column
-
-              prop="pst"
-              label="权限">
-            </el-table-column>
-
-            <el-table-column
-
-              prop="remark"
-              width="400"
-              label="描述">
+              style="width: 70%"
+              label="角色名"
+              align="center">
             </el-table-column>
 
             <el-table-column
               align="center"
-              fixed="right"
               label="操作"
-              width="100">
+              style="width: 15%">
 
               <template slot-scope="scope">
                 <el-button @click="openDialog('edit',scope.row)" type="text" size="small">编辑</el-button>
@@ -156,7 +145,7 @@
         action:"",
         form_role: {
           name: "",
-          checkList: ['资讯发布', '资讯管理', "资讯栏目管理", "用户管理"],
+          checkList: [],
           description:"",
         },
         tableData:[],
@@ -285,18 +274,28 @@
 
         if (action === "getAllRole") {
 
-          this.$axios.get("/role/getAll", {
+          this.$axios.get("/sys/role/list", {
+            headers:{
+              'Authorization':'Bearer ' +sessionStorage.getItem("token")
+            },
             params: {
-              pageNum: 1,
-              pageSize: 1000,
+              pageNum:this.currentPage,
+              pageSize:this.page_size
             }
           }).then((res) => {
+            console.log("11111111111111111111111");
             console.log(res);
-            if(res.data.code===200){
-              this.roleList=res.data.map.pageInfo.list;
+            if(res.data.code===0){
+              this.roleList=res.data.data;
+              console.log("roleList^^^^^^^^^^^^&&&&&&&&&&&");
               console.log(roleList);
-            }
 
+              /*let list = res.data.data.list;
+              this.roleList = list.map(function (item) {
+                return item;
+              });*/
+
+            }
 
           }).catch((error) => {
 

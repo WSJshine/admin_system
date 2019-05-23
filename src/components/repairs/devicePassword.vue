@@ -28,8 +28,10 @@
             </el-form-item>
             <el-form-item label="设备状态">
               <el-select  placeholder="设备状态" v-model="formInline.deviceStatus" size="small">
-                <el-option label="在线" value="1"></el-option>
-                <el-option label="离线" value="0"></el-option>
+                <el-option label="正常" value="0"></el-option>
+                <el-option label="不正常" value="1"></el-option>
+                <el-option label="未激活" value="2"></el-option>
+                <el-option label="离线" value="3"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="设备位置">
@@ -86,7 +88,7 @@
             </el-table-column>
 
             <el-table-column
-              prop="deviceStatus"
+              prop="deviceStatusString"
               style="width: 10%"
               label="设备状态" align="center">
             </el-table-column>
@@ -414,16 +416,13 @@
               if (res.data.code === 0) {
                 let list = res.data.data.list;
                 this.page_total = res.data.data.pageTotal;
-                this.tableData = list.map(function (item) {
-                  if (item.deviceStatus === 1) {
-                    item.deviceStatus = "在线"
-                  } else if (item.deviceStatus === 0) {
-                    item.deviceStatus = "离线"
-                  } else {
-                    item.loginTime = "暂无记录";
-                  }
-                  return item;
-                });
+                if(list === null){
+                  this.tips("暂无数据");
+                  this.tableData = null;
+                }else{
+                  this.tableData = list;
+                }
+
               } else {
                 this.tips(res.data.message,"warning");
               }
@@ -466,16 +465,22 @@
           if (res.data.code === 0) {
             let list = res.data.data.list;
             this.page_total = res.data.data.pageTotal;
-            this.tableData = list.map(function (item) {
-              if (item.deviceStatus === 1) {
-                item.deviceStatus = "在线"
-              } else if (item.deviceStatus === 0) {
-                item.deviceStatus = "离线"
-              } else {
-                item.loginTime = "暂无记录";
-              }
-              return item;
-            });
+            if(list === null){
+              this.tips("暂无数据");
+              this.tableData = null;
+            }else{
+              this.tableData = list;/*.map(function (item) {
+                if (item.deviceStatus === 1) {
+                  item.deviceStatus = "在线"
+                } else if (item.deviceStatus === 0) {
+                  item.deviceStatus = "离线"
+                } else {
+                  item.loginTime = "暂无记录";
+                }
+                return item;
+              });*/
+            }
+
           } else {
             this.tips(res.data.message,"warning");
           }

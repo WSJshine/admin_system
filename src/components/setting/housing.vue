@@ -433,6 +433,7 @@
       refresh(){
         this.search="";
         this.requestApi("getUser");
+        this.tips("刷新成功","success");
       },
       requestApi(action, verifyCB) {
 
@@ -533,13 +534,20 @@
                   pageSize:this.page_size
                 }
               } ).then((res) => {
-                if (res.status === 200) {
+                if (res.data.code === 0) {
                   let list = res.data.data.list;
                   this.page_total = res.data.data.pageTotal;
-                  this.tableData = list.map(function (item) {
-                    return item;
-                  });
+                  if (list === null){
+                    this.tips("暂无数据");
+                    this.tableData = null;
+                  }else{
+                    this.tableData = list.map(function (item) {
+                      return item;
+                    });
+                  }
+
                   // this.tips("查看房源列表接口连接成功");
+
                 } else {
                   this.tips(res.data.message,"warning");
                 }
@@ -609,16 +617,20 @@
           if (res.data.code === 0) {
             let list = res.data.data.list;
             this.page_total = res.data.data.pageTotal;
-            this.tableData = list.map(function (item) {
-              if (item.deviceStatus === 1) {
-                item.deviceStatus = "在线"
-              } else if (item.deviceStatus === 0) {
-                item.deviceStatus = "离线"
-              } else {
-                item.loginTime = "暂无记录";
-              }
-              return item;
-            });
+            if(list === null){
+              this.tips("暂无数据");
+              this.tableData = null;
+            }else{
+              this.tableData = list.map(function (item) {
+                if (item.deviceStatus === 1) {
+                  item.deviceStatus = "在线"
+                } else if (item.deviceStatus === 0) {
+                  item.deviceStatus = "离线"
+                }
+                return item;
+              });
+            }
+
           } else {
             this.tips(res.data.message,"warning");
           }

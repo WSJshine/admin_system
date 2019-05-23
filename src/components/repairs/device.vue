@@ -32,17 +32,19 @@
             </el-form-item>
             <el-form-item label="设备状态">
               <el-select  placeholder="设备状态" v-model="formInline.deviceStatus" size="small">
-                <el-option label="在线" value="1"></el-option>
-                <el-option label="离线" value="0"></el-option>
+                <el-option label="正常" value="0"></el-option>
+                <el-option label="不正常" value="1"></el-option>
+                <el-option label="未激活" value="2"></el-option>
+                <el-option label="离线" value="3"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="设备位置">
               <el-cascader
                 :change-on-select="true"
-                :props="defaultParams"
-                :options="options"
-                v-model="selectedOptions"
-                @change="handelChange"
+                :props="defaultParams1"
+                :options="options1"
+                v-model="selectedOptions1"
+                @change="handelChange1"
                 size="small"
                 clearable
               ></el-cascader>
@@ -101,7 +103,7 @@
             </el-table-column>
 
             <el-table-column
-              prop="deviceStatus"
+              prop="deviceStatusString"
               style="width: 10%"
               label="设备状态" align="center">
             </el-table-column>
@@ -238,7 +240,24 @@
           </el-row>
         </el-form-item>-->
 
-        <el-form-item label="楼栋类型" :label-width="formLabelWidth" prop="buildingType">
+        <el-form-item label="设备位置" :label-width="formLabelWidth" prop="schoolAddress">
+          <el-row>
+
+            <el-cascader
+              :change-on-select="true"
+              :props="defaultParams2"
+              :options="options2"
+              v-model="selectedOptions2"
+              @change="handelChange2"
+              size="small"
+              clearable
+            ></el-cascader>
+
+          </el-row>
+        </el-form-item>
+
+
+      <!--  <el-form-item label="楼栋类型" :label-width="formLabelWidth" prop="buildingType">
           <el-select v-model="form_user.buildingType" placeholder="请选择楼栋类型"  @change="selectbuildingType">
             <el-option
               v-for="name in options"
@@ -248,9 +267,9 @@
             </el-option>
           </el-select>
 
-        </el-form-item>
+        </el-form-item>-->
 
-        <el-form-item label="楼栋名称" :label-width="formLabelWidth" prop="buildingName">
+     <!--   <el-form-item label="楼栋名称" :label-width="formLabelWidth" prop="buildingName">
           <el-select v-model="form_user.buildingName" placeholder="请选择楼栋名称"  @change="selectbuildingName" >
             <el-option
               v-for="(name,index) in one"
@@ -259,9 +278,9 @@
               :key="index">
             </el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item>-->
 
-        <el-form-item label="楼层" :label-width="formLabelWidth" prop="floorName">
+        <!--<el-form-item label="楼层" :label-width="formLabelWidth" prop="floorName">
           <el-select v-model="form_user.floorName" placeholder="请选择楼层"  @change="selectfloorName" >
             <el-option
               v-for="(name,index) in two"
@@ -270,9 +289,9 @@
               :key="index">
             </el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item>-->
 
-        <el-form-item label="房间号" :label-width="formLabelWidth" prop="roomNumber">
+  <!--      <el-form-item label="房间号" :label-width="formLabelWidth" prop="roomNumber">
           <el-select v-model="form_user.roomNumber" placeholder="请选择房间号" >
             <el-option
               v-for="(name,index) in three"
@@ -281,7 +300,7 @@
               :key="index">
             </el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item>-->
 
         <el-form-item label="备注" :label-width="formLabelWidth" prop="remarks">
           <el-row>
@@ -369,13 +388,23 @@
           deviceStatus:''
         },
 
-        vals:[],
         one:[],
         two:[],
         three:[],
-        options:[],
-        selectedOptions: [],
-        defaultParams: {
+/*新增和编辑*/
+        vals2:[],
+        options2:[],
+        selectedOptions2: [],
+        defaultParams2: {
+          label: 'name',
+          value: 'id',
+          children: 'children'
+        },
+        /*页面查询*/
+        vals1:[],
+        options1:[],
+        selectedOptions1: [],
+        defaultParams1: {
           label: 'name',
           value: 'name',
           children: 'children'
@@ -505,34 +534,42 @@
 
         switch (action) {
           case "add":
-            this.$axios({
-              method:'post',
-              url:'/device',
-              data: {
-                deviceName: this.form_user.deviceName,//设备名
-                imei: this.form_user.imei,//IMEI号
-                deviceTypeString: this.form_user.deviceTypeString,//设备类型
-                signalLevel: this.form_user.signalLevel,
-                batteryLevel: this.form_user.batteryLevel,
-                position: this.form_user.position,
-                remarks: this.form_user.remarks,//备注
-                deviceStatus: this.form_user.deviceStatus,//设备状态
-              },
-              headers:{
-                'Authorization':'Bearer ' +sessionStorage.getItem("token")
-              }
-            }).then((res) => {
-              if (res.data.code === 0) {
-                this.tips( res.data.message,"success")
-                this.requestApi("getUser");
-              } else {
-                this.tips( res.data.message,"warning")
-              }
-            }).catch(
-              (error) => {
-                console.log(error);
-              }
-            );
+            let k = this.vals2.length - 1;
+            if(this.vals2[k] === 0){
+              this.tips('没选中学生房间号',"error");
+            }else{
+              this.$axios({
+                method:'post',
+                url:'/device',
+                data: {
+                  deviceName: this.form_user.deviceName,//设备名
+                  imei: this.form_user.imei,//IMEI号
+                //  deviceTypeString: this.form_user.deviceTypeString,//设备类型
+                 /* signalLevel: this.form_user.signalLevel,
+                  batteryLevel: this.form_user.batteryLevel,*/
+                  /*position: this.form_user.position,*/
+                  remarks: this.form_user.remarks,//备注
+                 // deviceStatus: this.form_user.deviceStatus,//设备状态
+                  devicePositionId:this.vals2[3],//设备位置，此处传的是最后一层的id
+                },
+                headers:{
+                  'Authorization':'Bearer ' +sessionStorage.getItem("token")
+                }
+              }).then((res) => {
+                if (res.data.code === 0) {
+                  this.tips( res.data.message,"success")
+                  this.requestApi("getUser");
+                } else {
+                  this.tips( res.data.message,"warning")
+                }
+              }).catch(
+                (error) => {
+                  console.log(error);
+                }
+              );
+
+            }
+
             break;
           case "edit":
             this.$axios.put("/device", {
@@ -542,9 +579,10 @@
                 deviceTypeString: this.form_user.deviceTypeString,
                 signalLevel: this.form_user.signalLevel,
                 batteryLevel: this.form_user.batteryLevel,
-                devicePosition: this.form_user.devicePosition,
+               /* devicePosition: this.form_user.devicePosition,*/
                 remarks: this.form_user.remarks,
                 deviceStatus: this.form_user.deviceStatus,
+                devicePositionId:this.vals2[3],
               },
               {
                 headers:{
@@ -600,16 +638,14 @@
               if (res.data.code === 0) {
                 let list = res.data.data.list;
                 this.page_total = res.data.data.pageTotal;
-                this.tableData = list.map(function (item) {
-                  if (item.deviceStatus === 1) {
-                    item.deviceStatus = "在线"
-                  } else if (item.deviceStatus === 0) {
-                    item.deviceStatus = "离线"
-                  } else {
-                    item.loginTime = "暂无记录";
-                  }
-                  return item;
-                });
+                if (list === null){
+                  this.tips("暂无数据");
+                  this.tableData = null;
+                }else{
+                  this.tableData = list;
+                }
+
+
               } else {
                 this.tips(res.data.message,"warning");
               }
@@ -671,6 +707,15 @@
         }
       },
       onSubmit() {
+        console.log("11111111111");
+        console.log(this.vals1[0]);
+
+        console.log("22222222222");
+        console.log(this.vals1[1]);
+        console.log("333333333333");
+        console.log(this.vals1[2]);
+        console.log("4444444444444444");
+        console.log(this.vals1[3]);
         this.$axios({//查询
           method:'get',
           url:'/device/list',
@@ -680,24 +725,34 @@
           params:{
             pageNum:this.currentPage,
             pageSize:this.page_size,
-            deviceName: this.formInline.deviceName,
-            deviceTypeString: this.formInline.deviceTypeString,
-            deviceStatus: this.formInline.deviceStatus
+            deviceName: this.formInline.deviceName,//设备名
+            deviceTypeString: this.formInline.deviceTypeString,//设备类型
+            deviceStatus: this.formInline.deviceStatus,//设备状态
+            buildingType:this.vals1[0],
+            buildingName:this.vals1[1],
+            floorName:this.vals1[2],
+            roomNumber:this.vals1[3],
           }
         } ).then((res) => {
+
           if (res.data.code === 0) {
-            let list = res.data.data.list;
-            this.page_total = res.data.data.pageTotal;
-            this.tableData = list.map(function (item) {
-              if (item.deviceStatus === 1) {
-                item.deviceStatus = "在线"
-              } else if (item.deviceStatus === 0) {
-                item.deviceStatus = "离线"
-              } else {
-                item.loginTime = "暂无记录";
-              }
-              return item;
-            });
+              let list = res.data.data.list;
+              this.page_total = res.data.data.pageTotal;
+                if (list === null){
+                  this.tips("暂无数据");
+                  this.tableData = null;
+                }else{
+                    this.tableData = list;/*.map(function (item) {
+                    if (item.deviceStatus === 1) {
+                      item.deviceStatus = "在线"
+                    } else if (item.deviceStatus === 0) {
+                      item.deviceStatus = "离线"
+                    }
+                    return item;
+                  });*/
+                }
+
+
           } else {
             this.tips(res.data.message,"warning");
           }
@@ -772,23 +827,78 @@
             pageNum:this.currentPage
           }
         } ).then((res) => {
-
+        /*  res.data= {//逗我呢哥，你id都是0  后台只让我给他传最里层的Id  最里边的Id不是0，还好你不是建筑商，不然我只让你给我盖20楼以上的，20楼以下的不要哈哈，写死id试试
+            "code": 0,
+            "message": "成功",
+            "data": [{
+              "name": "上海科技大学",
+              "children": [{
+                "name": "体育馆",
+                "children": [{"name": "2楼", "children": [{"id": 9981491283427328, "name": "201"}], "id": 16}],
+                "id": "0"
+              }, {
+                "name": "学生会",
+                "children": [{"name": "4楼", "children": [{"id": 9983288131649536, "name": "411"}], "id": 15}],
+                "id": 1
+              }, {
+                "name": "实验楼B2",
+                "children": [{"name": "3楼", "children": [{"id": 9982316927975424, "name": "205"}], "id": 14}],
+                "id": 2
+              }, {
+                "name": "宿舍楼S3",
+                "children": [{"name": "6楼", "children": [{"id": 9982797993672704, "name": "610"}], "id": 13}],
+                "id": 3
+              }, {
+                "name": "教学楼A1",
+                "children": [{"name": "3楼", "children": [{"id": 9981858649931776, "name": "301"}], "id":12}],
+                "id": 0
+              }, {
+                "name": "教学楼A5",
+                "children": [{"name": "5楼", "children": [{"id": 9982120714240000, "name": "502"}], "id": 11}],
+                "id": 4
+              }, {
+                "name": "职工宿舍楼",
+                "children": [{"name": "7楼", "children": [{"id": 9983480679563264, "name": "705"}], "id": 10}],
+                "id": 5
+              }],
+              "id": 6
+            }, {
+              "name": "上海科技大学体育馆",
+              "children": [{
+                "name": "体育馆游泳池",
+                "children": [{"name": "1楼", "children": [{"id": 9981160822603776, "name": "101"}], "id": 9}],
+                "id": 7
+              }],
+              "id": 8
+            }]
+          };*/
           console.log(res.data.data)
-          this.options=res.data.data;
+          this.options2=res.data.data;
+          this.options1=res.data.data;
           console.log("2222222222222222222222222222");
           console.log("2222222222222222222222222222");
-          console.log(this.options)
+          console.log(this.options2)
+          console.log(this.options1)
           console.log("3443535436356346533546576543")
         })
       },
-      handelChange(value){
+      handelChange2(value){
 
-        this.vals=value;
+        this.vals2=value;
         console.log(value);
-        console.log(this.vals);
-        console.log(this.vals[0])
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        console.log(this.vals2);
+        console.log(this.vals2[3])
       },
-      selectbuildingType(value){
+      handelChange1(value){
+
+        this.vals1=value;
+        console.log(value);
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        console.log(this.vals1);
+        console.log(this.vals1[3])
+      },
+   /*   selectbuildingType(value){
         for(var i=0;i<this.options.length;i++){
           if(value === this.options[i].name){
             this.one = this.options[i].children;
@@ -809,7 +919,7 @@
             this.three = this.two[i].children;
           }
         }
-      },
+      },*/
 
     },
     created() {
